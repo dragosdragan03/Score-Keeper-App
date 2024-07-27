@@ -10,51 +10,77 @@ class GamesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Choose game')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const RentzGame()),
-                );
-              },
-              child: const Text('Rentz'),
-            ),
-            const SizedBox(height: 20), // Add space between the buttons
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const WhistGame()),
-                );
-              },
-              child: const Text('Whist'),
-            ),
-            const SizedBox(height: 20), // Add space between the buttons
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const BridgeGame()),
-                );
-              },
-              child: const Text('Bridge'),
-            ),
-            const SizedBox(height: 20), // Add space between the buttons
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const OtherGames()),
-                );
-              },
-              child: const Text('Other'),
-            ),
-          ],
+      appBar: AppBar(
+        title: const Text('Choose Game'),
+        backgroundColor: Colors.deepPurple,
+        centerTitle: true,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blueAccent, Colors.purpleAccent],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildGameButton(
+                context,
+                icon: Icons.card_travel,
+                label: 'Rentz',
+                destination: const RentzGame(),
+              ),
+              _buildGameButton(
+                context,
+                icon: Icons.security,
+                label: 'Whist',
+                destination: const WhistGame(),
+              ),
+              _buildGameButton(
+                context,
+                icon: Icons.group,
+                label: 'Bridge',
+                destination: const BridgeGame(),
+              ),
+              _buildGameButton(
+                context,
+                icon: Icons.games,
+                label: 'Other',
+                destination: const OtherGames(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGameButton(BuildContext context,
+      {required IconData icon,
+      required String label,
+      required Widget destination}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+      child: Card(
+        elevation: 5,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: ListTile(
+          leading: Icon(icon, color: Colors.deepPurple),
+          title: Text(label,
+              style:
+                  const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => destination),
+            );
+          },
         ),
       ),
     );
