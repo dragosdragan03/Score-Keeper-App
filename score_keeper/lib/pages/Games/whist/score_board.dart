@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class WhistGame extends StatelessWidget {
-  const WhistGame({super.key});
+class ScoreBoard extends StatelessWidget {
+  const ScoreBoard({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Whist Game')),
+      appBar: AppBar(title: Text('Score Board')),
     );
   }
 }

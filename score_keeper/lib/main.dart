@@ -17,9 +17,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         textTheme: GoogleFonts.poppinsTextTheme(
-          Theme.of(context)
-              .textTheme
-              .apply(bodyColor: Colors.white, displayColor: Colors.white),
+          Theme.of(context).textTheme.apply(
+              bodyColor: Color.fromARGB(255, 22, 16, 16),
+              displayColor: Colors.white),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
@@ -54,7 +54,7 @@ class HomeScreen extends StatelessWidget {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/background.jpg'), // Background image
+            image: AssetImage('assets/background.jpeg'), // Background image
             fit: BoxFit.cover,
           ),
         ),
@@ -64,7 +64,7 @@ class HomeScreen extends StatelessWidget {
             children: [
               _buildButton(
                 context,
-                icon: Icons.games,
+                icon: Icons.people,
                 label: 'Choose Game',
                 destination: const GamesPage(),
               ),
