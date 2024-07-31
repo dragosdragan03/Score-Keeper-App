@@ -17,7 +17,7 @@ class GamesPage extends StatelessWidget {
         elevation: 0,
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [Colors.blueAccent, Colors.purpleAccent],
             begin: Alignment.topLeft,
@@ -44,7 +44,7 @@ class GamesPage extends StatelessWidget {
                 context,
                 icon: Icons.group,
                 label: 'Bridge',
-                destination: TeamsPage(),
+                destination: const TeamsPage(),
               ),
               _buildGameButton(
                 context,

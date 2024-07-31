@@ -5,7 +5,7 @@ class TeamInput extends StatefulWidget {
   final TextEditingController controller1;
   final TextEditingController controller2;
 
-  TeamInput({
+  const TeamInput({
     super.key,
     required this.teamName,
     required this.controller1,
@@ -33,8 +33,6 @@ class TeamInputState extends State<TeamInput> {
         ok = false;
       }
     });
-    print(
-        "${widget.teamName} $ok ${widget.controller1.text} ${widget.controller2.text}");
     return ok;
   }
 
@@ -42,36 +40,36 @@ class TeamInputState extends State<TeamInput> {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
-      margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       child: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               "Team ${widget.teamName}",
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.blueAccent,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             TextField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: "Player 1",
                 border: OutlineInputBorder(),
                 filled: true,
                 fillColor: Colors.white,
               ),
               controller: widget.controller1,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black,
               ),
             ),
             Container(
               child: errorText1
-                  ? Text(
+                  ? const Text(
                       "Please input a name",
                       style: TextStyle(
                         color: Colors.red,
@@ -80,22 +78,22 @@ class TeamInputState extends State<TeamInput> {
                     )
                   : null,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             TextField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: "Player 2",
                 border: OutlineInputBorder(),
                 filled: true,
                 fillColor: Colors.white,
               ),
               controller: widget.controller2,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.black,
               ),
             ),
             Container(
               child: errorText2
-                  ? Text(
+                  ? const Text(
                       "Please input a name",
                       style: TextStyle(
                         color: Colors.red,

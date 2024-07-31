@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:score_keeper/pages/Games/bridge/main_page.dart';
 import 'package:score_keeper/pages/Games/bridge/util/team_input.dart';
-import 'package:score_keeper/pages/Games/rentz_game.dart';
 
 class TeamsPage extends StatefulWidget {
+  const TeamsPage({super.key});
+
   @override
   State<TeamsPage> createState() => _TeamsPageState();
 }
@@ -24,8 +26,13 @@ class _TeamsPageState extends State<TeamsPage> {
       if (!_teamBKey.currentState!.foo()) ok = false;
 
       if (ok) {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const RentzGame()));
+        List<String> names =
+            _controllers.map((controller) => controller.text).toList();
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    MainBridgePage(names[0], names[1], names[2], names[3])));
         for (var controller in _controllers) {
           controller.clear();
         }

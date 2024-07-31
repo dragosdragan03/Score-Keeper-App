@@ -5,7 +5,7 @@ class OtherGames extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('chirac o suge')),
+      appBar: AppBar(title: const Text('chirac o suge')),
     );
   }
 }
