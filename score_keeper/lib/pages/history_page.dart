@@ -6,7 +6,7 @@ class HistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Games Played')),
+      appBar: AppBar(title: const Text('Games Played')),
     );
   }
 }

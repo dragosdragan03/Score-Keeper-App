@@ -13,7 +13,7 @@ class RentzGame extends StatelessWidget {
             bottomRight: Radius.circular(25),
           ),
         ),
-        title: Text('Rentz Game'),
+        title: const Text('Rentz Game'),
         actions: [
           IconButton(
               onPressed: () {
@@ -35,7 +35,7 @@ class RentzGame extends StatelessWidget {
                   ),
                 );
               },
-              icon: Icon(Icons.question_mark))
+              icon: const Icon(Icons.question_mark))
         ],
       ),
     );
