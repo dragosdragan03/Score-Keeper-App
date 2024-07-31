@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:score_keeper/pages/Games/whist/games_details.dart';
-import 'package:score_keeper/utils/custom_listView.dart';
-import 'package:score_keeper/utils/tab_bar.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/custom_listView.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/tab_bar.dart';
 
 class WhistGame extends StatefulWidget {
   const WhistGame({super.key});

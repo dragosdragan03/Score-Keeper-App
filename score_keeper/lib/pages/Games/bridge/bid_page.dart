@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:score_keeper/pages/Games/bridge/util/team.dart';
+import 'package:score_keeper/pages/Games/bridge/bridge_utils/team.dart';
 
 class BidPage extends StatefulWidget {
   // final Team teamA, teamB;
@@ -15,7 +15,7 @@ class _BidPageState extends State<BidPage> {
   @override
   Widget build(BuildContext context) {
     final teamA = Provider.of<Team>(context);
-    final teamB = Provider.of<Team>(context);
+    // final teamB = Provider.of<Team>(context);
 
     return Scaffold(
       appBar: AppBar(
