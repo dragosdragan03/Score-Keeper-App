@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-<<<<<<< HEAD
-import 'package:score_keeper/pages/Games/bridge/util/team.dart';
-import 'main_page.dart';
-=======
 import 'package:score_keeper/pages/Games/bridge/bridge_utils/team.dart';
->>>>>>> e8ca3efb2b6477886c7c3e192badb54682b741c4
 
 class BidPage extends StatefulWidget {
-  // final Team teamA, teamB;
-  // const BidPage({super.key, required this.teamA, required this.teamB});
-  const BidPage({super.key});
+  final Team teamA, teamB;
+  const BidPage({super.key, required this.teamA, required this.teamB});
+  // const BidPage({super.key});
 
   @override
   State<BidPage> createState() => _BidPageState();
@@ -19,7 +14,7 @@ class BidPage extends StatefulWidget {
 class _BidPageState extends State<BidPage> {
   @override
   Widget build(BuildContext context) {
-    final teamA = Provider.of<Team>(context);
+    // final teamA = Provider.of<Team>(context);
     // final teamB = Provider.of<Team>(context);
 
     return Scaffold(
@@ -50,9 +45,9 @@ class _BidPageState extends State<BidPage> {
                 ),
               ),
               onPressed: () {
-                setState(() {
-                  teamA.incrementScore();
-                });
+                // setState(() {
+                //   teamA.incrementScore();
+                // });
                 Navigator.pop(context);
               },
               child: const Text(

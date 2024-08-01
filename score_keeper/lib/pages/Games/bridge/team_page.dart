@@ -31,8 +31,11 @@ class _TeamsPageState extends State<TeamsPage> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    MainBridgePage(names[0], names[1], names[2], names[3])));
+                builder: (context) => MaterialApp(
+                      debugShowCheckedModeBanner: false,
+                      home: MainBridgePage(
+                          names[0], names[1], names[2], names[3]),
+                    )));
         for (var controller in _controllers) {
           controller.clear();
         }

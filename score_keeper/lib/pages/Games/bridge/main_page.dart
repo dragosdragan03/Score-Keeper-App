@@ -20,85 +20,84 @@ class MainBridgePage extends StatefulWidget {
 class _MainBridgePageState extends State<MainBridgePage> {
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: widget.teamA),
-        ChangeNotifierProvider.value(value: widget.teamB),
-      ],
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Bridge Game',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          'Bridge Game',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
-          backgroundColor: Colors.blueAccent,
         ),
-        body: Stack(children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 16.0),
-                Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: TeamScoreDisplay(team: widget.teamA),
-                  ),
+        backgroundColor: Colors.blueAccent,
+      ),
+      body: Stack(children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 16.0),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                const SizedBox(height: 16.0),
-                Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: TeamScoreDisplay(team: widget.teamB),
-                  ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TeamScoreDisplay(team: widget.teamA),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 16.0),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TeamScoreDisplay(team: widget.teamB),
+                ),
+              ),
+            ],
           ),
-          Positioned(
-            bottom: 16.0,
-            left: 16.0,
-            right: 16.0,
-            child: SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.green[800],
-                  padding: const EdgeInsets.symmetric(vertical: 15.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
+        ),
+        Positioned(
+          bottom: 16.0,
+          left: 16.0,
+          right: 16.0,
+          child: SizedBox(
+            width: double.infinity,
+            child: TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.green[800],
+                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => BidPage()));
-                },
-                child: const Text(
-                  "Start Game",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+              ),
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BidPage(
+                              teamA: widget.teamA,
+                              teamB: widget.teamB,
+                            )));
+              },
+              child: const Text(
+                "Start Game",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
           ),
-        ]),
-      ),
+        ),
+      ]),
     );
   }
 }
