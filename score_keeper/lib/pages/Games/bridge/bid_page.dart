@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/bridge/util/team.dart';
+import 'main_page.dart';
 
 class BidPage extends StatefulWidget {
   // final Team teamA, teamB;
