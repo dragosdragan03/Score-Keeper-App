@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:score_keeper/pages/Games/bridge/bridge_utils/player.dart';
+import 'bridge_player.dart';
 
 class Team with ChangeNotifier {
   String teamName;

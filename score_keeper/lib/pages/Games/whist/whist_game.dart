@@ -37,7 +37,12 @@ class _WhistGameState extends State<WhistGame> {
     if (introducedAllNames) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const GamesDetails()),
+        MaterialPageRoute(
+          builder: (context) => GamesDetails(
+            players: players.map((controller) => controller.text).toList(),
+            numberOfPlayers: numberOfPlayers,
+          ),
+        ),
       );
     }
   }

@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:item_count_number_button/item_count_number_button.dart';
 import 'package:score_keeper/pages/Games/whist/score_board.dart';
-import 'package:score_keeper/pages/Games/whist/switch.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/switch.dart';
 
 class GamesDetails extends StatefulWidget {
-  const GamesDetails({super.key});
+  final int numberOfPlayers;
+  final List<String> players;
+  const GamesDetails({
+    required this.numberOfPlayers,
+    required this.players,
+    super.key,
+  });
 
   @override
   State<GamesDetails> createState() => _GamesDetailsState();
@@ -162,7 +169,11 @@ class _GamesDetailsState extends State<GamesDetails> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const ScoreBoard()),
+            MaterialPageRoute(
+                builder: (context) => ScoreBoard(
+                      playersName: widget.players,
+                      numberOfPlayers: widget.numberOfPlayers,
+                    )),
           );
         },
         child: const Icon(
