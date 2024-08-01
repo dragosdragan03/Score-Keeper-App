@@ -1,0 +1,1 @@
+The Score Keeper app is an intuitive and user-friendly mobile application designed for both iOS and Android platforms. Developed by a team of students from UPB, the app provides a seamless way to track scores for various card games. With its clean interface, and real-time updates, users can easily keep track of their favorite activities. 
