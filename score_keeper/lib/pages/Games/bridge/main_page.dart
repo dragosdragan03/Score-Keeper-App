@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/bridge/bid_page.dart';
-import 'package:score_keeper/pages/Games/bridge/util/team.dart';
-import 'package:score_keeper/pages/Games/bridge/util/team_score_display.dart';
+import 'package:score_keeper/pages/Games/bridge/bridge_utils/team.dart';
+import 'package:score_keeper/pages/Games/bridge/bridge_utils/team_score_display.dart';
 
 class MainBridgePage extends StatefulWidget {
   final Team teamA;

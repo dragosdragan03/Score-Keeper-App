@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:score_keeper/pages/Games/bridge/main_page.dart';
-import 'package:score_keeper/pages/Games/bridge/util/team_input.dart';
+import 'package:score_keeper/pages/Games/bridge/bridge_utils/team_input.dart';
 
 class TeamsPage extends StatefulWidget {
   const TeamsPage({super.key});
