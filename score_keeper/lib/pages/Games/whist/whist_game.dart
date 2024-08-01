@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:score_keeper/pages/Games/whist/games_details.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/custom_listView.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/tab_bar.dart';
+// import 'dart:async';
 
 class WhistGame extends StatefulWidget {
   const WhistGame({super.key});
@@ -15,12 +16,14 @@ class _WhistGameState extends State<WhistGame> {
   bool introducedAllNames = true;
   bool isListVisible = false; // first time the list is hidden
   List<TextEditingController> players = [];
+  // Timer? _fadeaway;
 
   @override
   void initState() {
     super.initState();
     // Initialize controllers for the default number of players
     players = List.generate(numberOfPlayers, (_) => TextEditingController());
+    // _fadeaway = Timer(Duration(seconds: 5) );
   }
 
   void submitButton() {
@@ -84,6 +87,7 @@ class _WhistGameState extends State<WhistGame> {
       ),
       body: Column(
         // mainAxisAlignment: MainAxisAlignment.center,
+        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text("Choose the number of players",
               style: TextStyle(
@@ -108,8 +112,27 @@ class _WhistGameState extends State<WhistGame> {
               value: numberOfPlayers,
               areaController: players,
             ),
-          // if (isListVisible && !introducedAllNames)
-          //   const Text("introduceti toate numele"),
+          Spacer(), // Takes up remaining space
+          Padding(
+            padding: const EdgeInsets.only(
+                bottom: 20.0), // Add space from the bottom
+            child: AnimatedOpacity(
+              opacity: isListVisible && !introducedAllNames ? 1.0 : 0.0,
+              duration: Duration(seconds: 1),
+              child: Container(
+                padding: EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(8.0),
+                  border: Border.all(color: Colors.black, width: 2.0),
+                ),
+                child: const Text(
+                  "Warning: Please insert all players names before proceeding with the game!",
+                  style: TextStyle(color: Colors.black, fontSize: 16.0),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
