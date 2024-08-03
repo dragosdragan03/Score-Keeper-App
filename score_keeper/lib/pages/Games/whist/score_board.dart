@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:score_keeper/pages/Games/whist/whist_game.dart';
+import 'package:score_keeper/pages/Games/whist/games_details.dart';
+// import 'package:score_keeper/pages/Games/whist/whist_game.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/optionsButton.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart';
+import 'package:score_keeper/pages/Games/whist/input_rounds.dart' as Bids;
+import 'package:score_keeper/pages/Games/whist/whist_utils/output_rounds.dart'
+    as Outcomes;
+
+bool isRound = false;
+
+bool is181 = true;
 
 class ScoreBoard extends StatefulWidget {
   final int numberOfPlayers;
   final List<String> playersName;
+  // final bool GameType;
 
   const ScoreBoard({
     required this.numberOfPlayers,
@@ -44,6 +53,8 @@ class _ScoreBoardState extends State<ScoreBoard> {
       );
       players.add(player);
     }
+
+    // if ()
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showDialog(
@@ -115,14 +126,41 @@ class _ScoreBoardState extends State<ScoreBoard> {
             onTap: () {
               // Add any desired action here
             },
-          ); // ListTile
+          );
+          // ListTile
         },
         separatorBuilder: (BuildContext context, int index) => const Divider(
           color: Colors.white,
         ), // Divider
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          if (!isRound) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Bids.InputRounds(
+                        numberOfPlayers: players.length,
+                        playersName:
+                            players.map((player) => player.name).toList(),
+                        players: players,
+                      )),
+            );
+            isRound = true;
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => Outcomes.OutputRounds(
+                        numberOfPlayers: players.length,
+                        playersName:
+                            players.map((player) => player.name).toList(),
+                        players: players,
+                      )),
+            );
+            isRound = false;
+          }
+        },
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         child: const Icon(Icons.edit),
