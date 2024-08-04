@@ -83,7 +83,7 @@ class _WhistGameState extends State<WhistGame> {
                     title: const Text('Game Rules'),
                     contentPadding: const EdgeInsets.all(20.0),
                     content: const Text(
-                        "Each of the partnerships tries to score points by taking any trick in excess of six. The partnership with the most points at the end of play wins the game."),
+                        "The goal of every player is to gain the most points. For the rounds with 1 to 7 cards there is also a card on the table, called "),
                   ),
                 );
               },

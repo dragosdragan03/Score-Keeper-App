@@ -6,11 +6,13 @@ class InputRounds extends StatefulWidget {
   final int numberOfPlayers;
   final List<String> playersName;
   final List<Player> players;
+  final bool GameType;
 
   const InputRounds({
     required this.numberOfPlayers,
     required this.playersName,
     required this.players,
+    required this.GameType,
     super.key,
   });
 
@@ -33,6 +35,10 @@ class _InputRoundsState extends State<InputRounds> {
     });
   }
 
+  void _confirmAndGoBack() {
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,34 +47,64 @@ class _InputRoundsState extends State<InputRounds> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(0.0),
-        child: ListView.builder(
-          itemCount: widget.numberOfPlayers,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 0.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Input bid for " + widget.playersName[index] + ":",
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Center(
-                    child: CustomTabBar(
-                      startIndex: 0,
-                      stopIndex: 8,
-                      step: 1,
-                      selectedNumber: _selectedNumbers[index],
-                      onNumberSelected: (number) =>
-                          _onNumberSelected(index, number),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: widget.numberOfPlayers,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 0.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "\tInput bid for " + widget.playersName[index] + ":",
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 8),
+                        Center(
+                          child: CustomTabBar(
+                            startIndex: 0,
+                            stopIndex: 8,
+                            step: 1,
+                            selectedNumber: _selectedNumbers[index],
+                            onNumberSelected: (number) =>
+                                _onNumberSelected(index, number),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
-            );
-          },
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: _confirmAndGoBack,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color.fromARGB(255, 0, 0, 0),
+                  foregroundColor: Colors.white,
+                  shadowColor: Colors.black,
+                  elevation: 5,
+                  textStyle: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 36,
+                    vertical: 24,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: const Text('Confirm'),
+              ),
+            ),
+          ],
         ),
       ),
     );

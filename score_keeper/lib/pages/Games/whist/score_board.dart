@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:score_keeper/pages/Games/whist/games_details.dart';
-// import 'package:score_keeper/pages/Games/whist/whist_game.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/optionsButton.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart';
 import 'package:score_keeper/pages/Games/whist/input_rounds.dart' as Bids;
@@ -9,16 +7,19 @@ import 'package:score_keeper/pages/Games/whist/whist_utils/output_rounds.dart'
 
 bool isRound = false;
 
-bool is181 = true;
+bool unlock = false; // pentru permutari
+
+int first_rounds = 0, middle_rounds = 6, last_rounds = 0;
 
 class ScoreBoard extends StatefulWidget {
   final int numberOfPlayers;
   final List<String> playersName;
-  // final bool GameType;
+  final bool gameType;
 
   const ScoreBoard({
     required this.numberOfPlayers,
     required this.playersName,
+    required this.gameType,
     super.key,
   });
 
@@ -127,15 +128,20 @@ class _ScoreBoardState extends State<ScoreBoard> {
               // Add any desired action here
             },
           );
-          // ListTile
         },
         separatorBuilder: (BuildContext context, int index) => const Divider(
           color: Colors.white,
-        ), // Divider
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           if (!isRound) {
+            if (unlock) {
+              Player lastPlayer = players.removeLast();
+              players.insert(0, lastPlayer);
+            }
+            first_rounds = players.length;
+            last_rounds = players.length;
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -144,6 +150,7 @@ class _ScoreBoardState extends State<ScoreBoard> {
                         playersName:
                             players.map((player) => player.name).toList(),
                         players: players,
+                        GameType: true,
                       )),
             );
             isRound = true;
@@ -159,6 +166,7 @@ class _ScoreBoardState extends State<ScoreBoard> {
                       )),
             );
             isRound = false;
+            unlock = true;
           }
         },
         backgroundColor: Colors.black,

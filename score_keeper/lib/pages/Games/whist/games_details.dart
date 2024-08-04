@@ -4,6 +4,8 @@ import 'package:item_count_number_button/item_count_number_button.dart';
 import 'package:score_keeper/pages/Games/whist/score_board.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/switch.dart';
 
+bool gameType = false;
+
 class GamesDetails extends StatefulWidget {
   final int numberOfPlayers;
   final List<String> players;
@@ -67,6 +69,7 @@ class _GamesDetailsState extends State<GamesDetails> {
                     color: Colors.black,
                   ),
                 ),
+                // gameType = false;
                 SizedBox(width: 20.0), // Space between text and switch
                 SwitchButton(),
                 SizedBox(width: 20.0), // Space between switch and text
@@ -173,6 +176,7 @@ class _GamesDetailsState extends State<GamesDetails> {
                 builder: (context) => ScoreBoard(
                       playersName: widget.players,
                       numberOfPlayers: widget.numberOfPlayers,
+                      gameType: gameType,
                     )),
           );
         },
