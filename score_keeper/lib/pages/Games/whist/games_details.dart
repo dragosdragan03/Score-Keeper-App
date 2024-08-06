@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:item_count_number_button/item_count_number_button.dart';
 import 'package:score_keeper/pages/Games/whist/score_board.dart';
-import 'package:score_keeper/pages/Games/whist/switch.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/switch.dart';
+
+bool gameType = false;
 
 class GamesDetails extends StatefulWidget {
-  const GamesDetails({super.key});
+  final int numberOfPlayers;
+  final List<String> players;
+  const GamesDetails({
+    required this.numberOfPlayers,
+    required this.players,
+    super.key,
+  });
 
   @override
   State<GamesDetails> createState() => _GamesDetailsState();
@@ -60,6 +69,7 @@ class _GamesDetailsState extends State<GamesDetails> {
                     color: Colors.black,
                   ),
                 ),
+                // gameType = false;
                 SizedBox(width: 20.0), // Space between text and switch
                 SwitchButton(),
                 SizedBox(width: 20.0), // Space between switch and text
@@ -162,7 +172,12 @@ class _GamesDetailsState extends State<GamesDetails> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const ScoreBoard()),
+            MaterialPageRoute(
+                builder: (context) => ScoreBoard(
+                      playersName: widget.players,
+                      numberOfPlayers: widget.numberOfPlayers,
+                      gameType: gameType,
+                    )),
           );
         },
         child: const Icon(
