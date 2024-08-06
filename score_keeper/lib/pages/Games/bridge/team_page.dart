@@ -33,18 +33,12 @@ class _TeamsPageState extends State<TeamsPage> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => MultiProvider(
-                      providers: [
-                        ChangeNotifierProvider<GameProvider>(
-                          create: (context) => GameProvider(
-                              names[0], names[1], names[2], names[3]),
-                        ),
-                      ],
-                      child: const MaterialApp(
-                        debugShowCheckedModeBanner: false,
-                        home: MainBridgePage(),
-                      ),
-                    )));
+              builder: (context) => ChangeNotifierProvider(
+                create: (context) =>
+                    GameProvider(names[0], names[1], names[2], names[3]),
+                child: const MainBridgePage(),
+              ),
+            ));
         for (var controller in _controllers) {
           controller.clear();
         }

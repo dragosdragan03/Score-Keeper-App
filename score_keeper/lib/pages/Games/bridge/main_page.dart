@@ -20,12 +20,6 @@ class _MainBridgePageState extends State<MainBridgePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Bridge Game'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
         actions: [
           IconButton(
               onPressed: () {
@@ -85,8 +79,13 @@ class _MainBridgePageState extends State<MainBridgePage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const BidPage()));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ChangeNotifierProvider.value(
+                        value: gameProvider,
+                        child: const BidPage(),
+                      )));
           gameProvider.setWinner(-1);
         },
         child: const Icon(
