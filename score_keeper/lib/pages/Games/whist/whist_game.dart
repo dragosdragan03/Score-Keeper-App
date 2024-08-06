@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:score_keeper/pages/Games/whist/games_details.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/custom_listView.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/tab_bar.dart';
-// import 'dart:async';
 
 class WhistGame extends StatefulWidget {
   const WhistGame({super.key});
@@ -65,7 +64,7 @@ class _WhistGameState extends State<WhistGame> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Whist Game'),
+        title: const Text('Whist Game'),
         actions: [
           IconButton(
               onPressed: () {
@@ -87,7 +86,7 @@ class _WhistGameState extends State<WhistGame> {
                   ),
                 );
               },
-              icon: Icon(Icons.question_mark))
+              icon: const Icon(Icons.question_mark))
         ],
       ),
       body: Column(
@@ -117,15 +116,15 @@ class _WhistGameState extends State<WhistGame> {
               value: numberOfPlayers,
               areaController: players,
             ),
-          Spacer(), // Takes up remaining space
+          const Spacer(), // Takes up remaining space
           Padding(
             padding: const EdgeInsets.only(
                 bottom: 20.0), // Add space from the bottom
             child: AnimatedOpacity(
               opacity: isListVisible && !introducedAllNames ? 1.0 : 0.0,
-              duration: Duration(seconds: 1),
+              duration: const Duration(seconds: 1),
               child: Container(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
                   color: Colors.red,
                   borderRadius: BorderRadius.circular(8.0),

@@ -13,8 +13,8 @@ class CustomTabBar extends StatefulWidget {
     required this.step,
     required this.selectedNumber,
     required this.onNumberSelected,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _CustomTabBarState createState() => _CustomTabBarState();
@@ -25,7 +25,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
 
   AnimatedContainer buildContainer(bool isSelected, int number) {
     return AnimatedContainer(
-      duration: Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 300),
       height: 40,
       width: 40,
       decoration: BoxDecoration(
@@ -35,7 +35,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
       child: Center(
         child: Text(
           "$number",
-          style: TextStyle(color: Colors.white, fontSize: 25),
+          style: const TextStyle(color: Colors.white, fontSize: 25),
         ),
       ),
     );

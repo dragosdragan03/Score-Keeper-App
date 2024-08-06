@@ -1,17 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/bridge/bid_page.dart';
-import 'package:score_keeper/pages/Games/bridge/bridge_utils/team.dart';
 import 'package:score_keeper/pages/Games/bridge/bridge_utils/team_score_display.dart';
+import 'package:score_keeper/pages/Games/bridge/bridge_utils/game_provider.dart';
+import 'package:score_keeper/pages/Games/bridge/team_page.dart';
 
 class MainBridgePage extends StatefulWidget {
-  final Team teamA;
-  final Team teamB;
-
-  MainBridgePage(String player1, String player2, String player3, String player4,
-      {super.key})
-      : teamA = Team(player1, player2, "A"),
-        teamB = Team(player3, player4, "B");
+  const MainBridgePage({super.key});
 
   @override
   State<MainBridgePage> createState() => _MainBridgePageState();
@@ -20,84 +15,83 @@ class MainBridgePage extends StatefulWidget {
 class _MainBridgePageState extends State<MainBridgePage> {
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: widget.teamA),
-        ChangeNotifierProvider.value(value: widget.teamB),
-      ],
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Bridge Game',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          backgroundColor: Colors.blueAccent,
-        ),
-        body: Stack(children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 16.0),
-                Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+    GameProvider gameProvider = Provider.of<GameProvider>(context);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Bridge Game'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Close'),
+                      )
+                    ],
+                    title: const Text('Game Rules'),
+                    contentPadding: const EdgeInsets.all(20.0),
+                    content: const Text(
+                        "Each of the partnerships tries to score points by taking any trick in excess of six. The partnership with the most points at the end of play wins the game."),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: TeamScoreDisplay(team: widget.teamA),
-                  ),
+                );
+              },
+              icon: const Icon(Icons.question_mark))
+        ],
+      ),
+      body: Stack(children: [
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 16.0),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                const SizedBox(height: 16.0),
-                Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: TeamScoreDisplay(team: widget.teamB),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            bottom: 16.0,
-            left: 16.0,
-            right: 16.0,
-            child: SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.green[800],
-                  padding: const EdgeInsets.symmetric(vertical: 15.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => BidPage()));
-                },
-                child: const Text(
-                  "Start Game",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TeamScoreDisplay(team: gameProvider.teamA),
                 ),
               ),
-            ),
+              const SizedBox(height: 16.0),
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: TeamScoreDisplay(team: gameProvider.teamB),
+                ),
+              ),
+            ],
           ),
-        ]),
+        ),
+      ]),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.black,
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ChangeNotifierProvider.value(
+                        value: gameProvider,
+                        child: const BidPage(),
+                      )));
+          gameProvider.setWinner(-1);
+        },
+        child: const Icon(
+          Icons.navigate_next_outlined,
+          color: Colors.white,
+        ),
       ),
     );
   }
