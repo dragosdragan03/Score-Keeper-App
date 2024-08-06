@@ -21,5 +21,6 @@ class Team with ChangeNotifier {
 
   void incrementScore() {
     score += 20;
+    notifyListeners();
   }
 }

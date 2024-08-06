@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:score_keeper/pages/Games/bridge/bridge_utils/game_provider.dart';
 import 'package:score_keeper/pages/Games/bridge/main_page.dart';
 import 'package:score_keeper/pages/Games/bridge/bridge_utils/team_input.dart';
 
@@ -31,10 +33,17 @@ class _TeamsPageState extends State<TeamsPage> {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => MaterialApp(
-                      debugShowCheckedModeBanner: false,
-                      home: MainBridgePage(
-                          names[0], names[1], names[2], names[3]),
+                builder: (context) => MultiProvider(
+                      providers: [
+                        ChangeNotifierProvider<GameProvider>(
+                          create: (context) => GameProvider(
+                              names[0], names[1], names[2], names[3]),
+                        ),
+                      ],
+                      child: const MaterialApp(
+                        debugShowCheckedModeBanner: false,
+                        home: MainBridgePage(),
+                      ),
                     )));
         for (var controller in _controllers) {
           controller.clear();
@@ -47,72 +56,65 @@ class _TeamsPageState extends State<TeamsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Bridge Game',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: Colors.blueAccent,
+        title: const Text('Bridge Game'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Close'),
+                      )
+                    ],
+                    title: const Text('Game Rules'),
+                    contentPadding: const EdgeInsets.all(20.0),
+                    content: const Text(
+                        "Each of the partnerships tries to score points by taking any trick in excess of six. The partnership with the most points at the end of play wins the game."),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.question_mark))
+        ],
       ),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(
-                bottom: 80.0), // Add padding to avoid overlap
-            child: ListView(
-              padding: const EdgeInsets.all(16.0),
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: TeamInput(
-                    key: _teamAKey,
-                    teamName: "A",
-                    controller1: _controllers[0],
-                    controller2: _controllers[1],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: TeamInput(
-                    key: _teamBKey,
-                    teamName: "B",
-                    controller1: _controllers[2],
-                    controller2: _controllers[3],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Positioned(
-            bottom: 16.0,
-            left: 16.0,
-            right: 16.0,
-            child: SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.green[800],
-                  padding: const EdgeInsets.symmetric(vertical: 15.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-                onPressed: buttonPress,
-                child: const Text(
-                  "Continue",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+      body: Padding(
+        padding:
+            const EdgeInsets.only(bottom: 80.0), // Add padding to avoid overlap
+        child: ListView(
+          padding: const EdgeInsets.all(16.0),
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: TeamInput(
+                key: _teamAKey,
+                teamName: "A",
+                controller1: _controllers[0],
+                controller2: _controllers[1],
               ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10.0),
+              child: TeamInput(
+                key: _teamBKey,
+                teamName: "B",
+                controller1: _controllers[2],
+                controller2: _controllers[3],
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.black,
+        onPressed: buttonPress,
+        child: const Icon(
+          Icons.navigate_next_outlined,
+          color: Colors.white,
+        ),
       ),
     );
   }

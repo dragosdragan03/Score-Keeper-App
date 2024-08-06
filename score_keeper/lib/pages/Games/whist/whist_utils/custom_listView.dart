@@ -7,8 +7,8 @@ class CustomListview extends StatefulWidget {
   const CustomListview({
     required this.value,
     required this.areaController,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   State<CustomListview> createState() => _CustomListviewState();
@@ -27,7 +27,7 @@ class _CustomListviewState extends State<CustomListview> {
               child: TextField(
                 controller: widget.areaController[index],
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(),
+                  border: const OutlineInputBorder(),
                   hintText: 'Player ${index + 1}',
                 ),
               ),

@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         textTheme: GoogleFonts.poppinsTextTheme(
           Theme.of(context).textTheme.apply(
-              bodyColor: Color.fromARGB(255, 22, 16, 16),
+              bodyColor: const Color.fromARGB(255, 22, 16, 16),
               displayColor: Colors.white),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
