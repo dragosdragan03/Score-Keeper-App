@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:score_keeper/pages/Games/bridge/team_page.dart';
 import 'package:score_keeper/pages/Games/other_games.dart';
-import 'package:score_keeper/pages/Games/rentz_game.dart';
+import 'package:score_keeper/pages/Games/rentz/rentz_game.dart';
 import 'package:score_keeper/pages/Games/whist/whist_game.dart';
 
 class GamesPage extends StatelessWidget {
