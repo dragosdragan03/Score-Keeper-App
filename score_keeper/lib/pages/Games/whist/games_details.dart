@@ -177,6 +177,7 @@ class _GamesDetailsState extends State<GamesDetails> {
                       playersName: widget.players,
                       numberOfPlayers: widget.numberOfPlayers,
                       gameType: gameType,
+                      rounds: 3 * widget.numberOfPlayers * 3 + 12,
                     )),
           );
         },
