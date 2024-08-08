@@ -23,6 +23,7 @@ class OutputRounds extends StatefulWidget {
 class _OutputState extends State<OutputRounds> {
   List<int> _selectedNumbers = [];
 
+  @override
   void initState() {
     super.initState();
     _selectedNumbers = List.generate(widget.numberOfPlayers, (index) => 1);
@@ -58,7 +59,7 @@ class _OutputState extends State<OutputRounds> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "\t" + widget.playersName[index] + "'s results:",
+                          "\t${widget.playersName[index]}'s results:",
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
@@ -84,7 +85,7 @@ class _OutputState extends State<OutputRounds> {
               child: ElevatedButton(
                 onPressed: _confirmAndGoBack,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 0, 0, 0),
+                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                   foregroundColor: Colors.white,
                   shadowColor: Colors.black,
                   elevation: 5,

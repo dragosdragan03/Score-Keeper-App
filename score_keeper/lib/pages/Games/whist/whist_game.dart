@@ -97,20 +97,18 @@ class _WhistGameState extends State<WhistGame> {
               style: TextStyle(
                 fontSize: 20,
               )),
-          Container(
-            child: CustomTabBar(
-                startIndex: 3,
-                stopIndex: 6,
-                step: 1,
-                selectedNumber: numberOfPlayers,
-                onNumberSelected: (int selectedNumber) {
-                  setState(() {
-                    numberOfPlayers = selectedNumber;
-                    isListVisible = true;
-                    updateControllers(selectedNumber);
-                  });
-                }),
-          ),
+          CustomTabBar(
+              startIndex: 3,
+              stopIndex: 6,
+              step: 1,
+              selectedNumber: numberOfPlayers,
+              onNumberSelected: (int selectedNumber) {
+                setState(() {
+                  numberOfPlayers = selectedNumber;
+                  isListVisible = true;
+                  updateControllers(selectedNumber);
+                });
+              }),
           if (isListVisible)
             CustomListview(
               value: numberOfPlayers,

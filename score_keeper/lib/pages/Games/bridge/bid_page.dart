@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/bridge/bridge_utils/custom_tab_bar.dart';
 import 'package:score_keeper/pages/Games/bridge/bridge_utils/game_provider.dart';
 import 'package:score_keeper/pages/Games/bridge/bridge_utils/player_bid_buttons.dart';
+import 'package:score_keeper/pages/Games/bridge/tricks_page.dart';
+import 'bridge_utils/constants.dart' as constants;
 
 class BidPage extends StatefulWidget {
   const BidPage({super.key});
@@ -12,28 +14,34 @@ class BidPage extends StatefulWidget {
 }
 
 class _BidPageState extends State<BidPage> {
-  static const symbols = [
-    Image(
-      image: AssetImage('assets/card_symbols/Hearts.png'),
-      fit: BoxFit.cover,
-    ),
-    Image(
-      image: AssetImage('assets/card_symbols/SuitClubs.svg.png'),
-      fit: BoxFit.cover,
-    ),
-    Image(
-      image: AssetImage('assets/card_symbols/SuitDiamonds.svg.png'),
-      fit: BoxFit.cover,
-    ),
-    Image(
-      image: AssetImage('assets/card_symbols/SuitSpades.svg.png'),
-      fit: BoxFit.cover,
-    ),
-    Text(
-      "none",
-      style: TextStyle(color: Colors.black),
-    ),
-  ];
+  final GlobalKey<CustomTabBarState> _bidKey = GlobalKey<CustomTabBarState>();
+  final GlobalKey<CustomTabBarState> _colorsKey =
+      GlobalKey<CustomTabBarState>();
+
+  bool noBid = false;
+  bool noColor = false;
+  bool noWinner = false;
+
+  void onPressed(GameProvider gameProvider) {
+    setState(() {
+      noBid = _bidKey.currentState!.getSelectedNumber() == -1;
+      noColor = _colorsKey.currentState!.getSelectedNumber() == -1;
+      noWinner = gameProvider.bidWinner == -1;
+
+      if (!noBid && !noColor && !noWinner) {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ChangeNotifierProvider.value(
+                      value: gameProvider,
+                      child: const TricksPage(),
+                    )));
+        gameProvider.chosenTrickIndex =
+            _colorsKey.currentState!.getSelectedNumber();
+        gameProvider.currentBid = _bidKey.currentState!.getSelectedNumber() + 7;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,10 +94,14 @@ class _BidPageState extends State<BidPage> {
                     ),
                   ],
                 ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+
+                // Bid winner selector
+
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
+                    const Text(
                       "Bid Winner",
                       style: TextStyle(
                         fontSize: 20,
@@ -97,8 +109,22 @@ class _BidPageState extends State<BidPage> {
                         color: Colors.black,
                       ),
                     ),
-                    SizedBox(height: 10),
-                    PlayerBidButtons(),
+                    const SizedBox(height: 10),
+                    const PlayerBidButtons(),
+                    Container(
+                      alignment: Alignment
+                          .center, // Center the child within the container
+                      child: Visibility(
+                        visible: noWinner,
+                        maintainSize: true,
+                        maintainAnimation: true,
+                        maintainState: true,
+                        child: const Text(
+                          "Please input a winner",
+                          style: TextStyle(color: Colors.red),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -116,9 +142,14 @@ class _BidPageState extends State<BidPage> {
                     ),
                   ],
                 ),
+
+                // Bid and color selector
+
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    // Bid selector
+
                     const Text(
                       "Bid",
                       style: TextStyle(
@@ -129,6 +160,7 @@ class _BidPageState extends State<BidPage> {
                     ),
                     const SizedBox(height: 10),
                     CustomTabBar(
+                      key: _bidKey,
                       backgroundColor: Colors.black,
                       pipeColor: Colors.white,
                       children: List.generate(
@@ -139,7 +171,18 @@ class _BidPageState extends State<BidPage> {
                         ),
                       ),
                     ),
+                    Container(
+                      child: noBid
+                          ? const Text(
+                              "Please input a bid",
+                              style: TextStyle(color: Colors.red),
+                            )
+                          : null,
+                    ),
                     const SizedBox(height: 20),
+
+                    // Color selector
+
                     const Text(
                       "Color",
                       style: TextStyle(
@@ -149,10 +192,19 @@ class _BidPageState extends State<BidPage> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    const CustomTabBar(
+                    CustomTabBar(
+                      key: _colorsKey,
                       backgroundColor: Colors.white,
                       pipeColor: Colors.black,
-                      children: symbols,
+                      children: constants.Constants.symbols,
+                    ),
+                    Container(
+                      child: noColor
+                          ? const Text(
+                              "Please input a color",
+                              style: TextStyle(color: Colors.red),
+                            )
+                          : null,
                     ),
                   ],
                 ),
@@ -161,13 +213,13 @@ class _BidPageState extends State<BidPage> {
           ),
         ),
       ),
+
+      // "Next" button
+
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         onPressed: () {
-          setState(() {
-            gameProvider.incrementScoreA();
-          });
-          Navigator.pop(context);
+          onPressed(gameProvider);
         },
         child: const Icon(
           Icons.navigate_next_outlined,

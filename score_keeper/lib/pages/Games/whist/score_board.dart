@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/optionsButton.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart';
-import 'package:score_keeper/pages/Games/whist/input_rounds.dart' as Bids;
+import 'package:score_keeper/pages/Games/whist/input_rounds.dart' as bids;
 import 'package:score_keeper/pages/Games/whist/whist_utils/output_rounds.dart'
-    as Outcomes;
+    as outcomes;
 
 bool isRound = false;
 
 bool unlock = false; // pentru permutari
 
-int first_rounds = 0, middle_rounds = 6, last_rounds = 0;
+int firstRounds = 0, middleRounds = 6, lastRounds = 0;
 
 class ScoreBoard extends StatefulWidget {
   final int numberOfPlayers;
@@ -46,7 +46,7 @@ class _ScoreBoardState extends State<ScoreBoard> {
     super.initState();
 
     for (var name in widget.playersName) {
-      Player player = new Player(
+      Player player = Player(
         name: name,
         score: 0,
         roundsWon: 0,
@@ -75,7 +75,7 @@ class _ScoreBoardState extends State<ScoreBoard> {
               Text(
                 necessaryCard(),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18),
+                style: const TextStyle(fontSize: 18),
               ),
             ],
           ),
@@ -140,17 +140,17 @@ class _ScoreBoardState extends State<ScoreBoard> {
               Player lastPlayer = players.removeLast();
               players.insert(0, lastPlayer);
             }
-            first_rounds = players.length;
-            last_rounds = players.length;
+            firstRounds = players.length;
+            lastRounds = players.length;
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => Bids.InputRounds(
+                  builder: (context) => bids.InputRounds(
                         numberOfPlayers: players.length,
                         playersName:
                             players.map((player) => player.name).toList(),
                         players: players,
-                        GameType: true,
+                        gameType: true,
                       )),
             );
             isRound = true;
@@ -158,7 +158,7 @@ class _ScoreBoardState extends State<ScoreBoard> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => Outcomes.OutputRounds(
+                  builder: (context) => outcomes.OutputRounds(
                         numberOfPlayers: players.length,
                         playersName:
                             players.map((player) => player.name).toList(),

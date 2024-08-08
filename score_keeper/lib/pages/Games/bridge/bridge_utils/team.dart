@@ -19,8 +19,8 @@ class Team with ChangeNotifier {
     return player2.name;
   }
 
-  void incrementScore() {
-    score += 20;
+  void incrementScore(int value) {
+    score += value;
     notifyListeners();
   }
 }

@@ -13,11 +13,15 @@ class CustomTabBar extends StatefulWidget {
   });
 
   @override
-  _CustomTabBarState createState() => _CustomTabBarState();
+  State<CustomTabBar> createState() => CustomTabBarState();
 }
 
-class _CustomTabBarState extends State<CustomTabBar> {
-  late int _selectedNumber = -1;
+class CustomTabBarState extends State<CustomTabBar> {
+  int _selectedNumber = -1;
+
+  int getSelectedNumber() {
+    return _selectedNumber;
+  }
 
   AnimatedContainer buildContainer(bool isSelected, int number) {
     return AnimatedContainer(
