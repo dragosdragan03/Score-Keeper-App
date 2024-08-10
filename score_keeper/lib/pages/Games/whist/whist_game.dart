@@ -15,14 +15,12 @@ class _WhistGameState extends State<WhistGame> {
   bool introducedAllNames = true;
   bool isListVisible = false; // first time the list is hidden
   List<TextEditingController> players = [];
-  // Timer? _fadeaway;
 
   @override
   void initState() {
     super.initState();
     // Initialize controllers for the default number of players
     players = List.generate(numberOfPlayers, (_) => TextEditingController());
-    // _fadeaway = Timer(Duration(seconds: 5) );
   }
 
   void submitButton() {
@@ -64,7 +62,7 @@ class _WhistGameState extends State<WhistGame> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Whist Game'),
+        title: Text('Whist Game'),
         actions: [
           IconButton(
               onPressed: () {
@@ -86,18 +84,21 @@ class _WhistGameState extends State<WhistGame> {
                   ),
                 );
               },
-              icon: const Icon(Icons.question_mark))
+              icon: Icon(Icons.question_mark))
         ],
       ),
-      body: Column(
-        // mainAxisAlignment: MainAxisAlignment.center,
-        // crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Choose the number of players",
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            const Text(
+              "Choose the number of players",
               style: TextStyle(
                 fontSize: 20,
-              )),
-          CustomTabBar(
+              ),
+            ),
+            const SizedBox(height: 10),
+            CustomTabBar(
               startIndex: 3,
               stopIndex: 6,
               step: 1,
@@ -108,34 +109,38 @@ class _WhistGameState extends State<WhistGame> {
                   isListVisible = true;
                   updateControllers(selectedNumber);
                 });
-              }),
-          if (isListVisible)
-            CustomListview(
-              value: numberOfPlayers,
-              areaController: players,
+              },
             ),
-          const Spacer(), // Takes up remaining space
-          Padding(
-            padding: const EdgeInsets.only(
-                bottom: 20.0), // Add space from the bottom
-            child: AnimatedOpacity(
-              opacity: isListVisible && !introducedAllNames ? 1.0 : 0.0,
-              duration: const Duration(seconds: 1),
-              child: Container(
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Colors.black, width: 2.0),
+            if (isListVisible)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: CustomListview(
+                  value: numberOfPlayers,
+                  areaController: players,
                 ),
-                child: const Text(
-                  "Warning: Please insert all players names before proceeding with the game!",
-                  style: TextStyle(color: Colors.black, fontSize: 16.0),
+              ),
+            if (isListVisible) const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: AnimatedOpacity(
+                opacity: isListVisible && !introducedAllNames ? 1.0 : 0.0,
+                duration: Duration(seconds: 1),
+                child: Container(
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: Colors.black, width: 2.0),
+                  ),
+                  child: const Text(
+                    "Warning: Please insert all players' names before proceeding with the game!",
+                    style: TextStyle(color: Colors.black, fontSize: 16.0),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,

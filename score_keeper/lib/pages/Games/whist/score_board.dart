@@ -1,17 +1,23 @@
+
 import 'package:flutter/material.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/optionsButton.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart';
-import 'package:score_keeper/pages/Games/whist/input_rounds.dart' as bids;
+import 'package:score_keeper/pages/Games/whist/input_rounds.dart' as Bids;
 import 'package:score_keeper/pages/Games/whist/whist_utils/output_rounds.dart'
-    as outcomes;
+    as Outcomes;
 
 bool isRound = false;
 
 bool unlock = false; // pentru permutari
 
-int firstRounds = 0, middleRounds = 6, lastRounds = 0;
+int to7_rounds = 6,
+    middle_rounds = 0,
+    to_2rounds = 6,
+    last_rounds = 0,
+    for_last = 0;
 
 class ScoreBoard extends StatefulWidget {
+  final int rounds;
   final int numberOfPlayers;
   final List<String> playersName;
   final bool gameType;
@@ -20,6 +26,7 @@ class ScoreBoard extends StatefulWidget {
     required this.numberOfPlayers,
     required this.playersName,
     required this.gameType,
+    required this.rounds,
     super.key,
   });
 
@@ -28,6 +35,7 @@ class ScoreBoard extends StatefulWidget {
 }
 
 class _ScoreBoardState extends State<ScoreBoard> {
+  int first_rounds = 0;
   List<Player> players = [];
   String necessaryCard() {
     if (widget.numberOfPlayers == 3) {
@@ -46,17 +54,17 @@ class _ScoreBoardState extends State<ScoreBoard> {
     super.initState();
 
     for (var name in widget.playersName) {
-      Player player = Player(
+      Player player = new Player(
         name: name,
         score: 0,
         roundsWon: 0,
         roundsLost: 0,
       );
       players.add(player);
+      first_rounds = widget.numberOfPlayers;
+      middle_rounds = widget.numberOfPlayers;
+      last_rounds = widget.numberOfPlayers;
     }
-
-    // if ()
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showDialog(
         context: context,
@@ -75,7 +83,7 @@ class _ScoreBoardState extends State<ScoreBoard> {
               Text(
                 necessaryCard(),
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18),
+                style: TextStyle(fontSize: 18),
               ),
             ],
           ),
@@ -135,22 +143,34 @@ class _ScoreBoardState extends State<ScoreBoard> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          int round_type = 0;
           if (!isRound) {
             if (unlock) {
               Player lastPlayer = players.removeLast();
               players.insert(0, lastPlayer);
             }
-            firstRounds = players.length;
-            lastRounds = players.length;
+            if (first_rounds >= 0) {
+              round_type = 1;
+              first_rounds--;
+            } else {
+              if (to7_rounds >= 0) {
+                round_type = to7_rounds + 1 - 1;
+                to7_rounds--;
+              } else {
+                round_type = 8;
+              }
+            }
+            for_last = round_type;
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => bids.InputRounds(
+                  builder: (context) => Bids.InputRounds(
                         numberOfPlayers: players.length,
                         playersName:
                             players.map((player) => player.name).toList(),
                         players: players,
-                        gameType: true,
+                        GameType: true,
+                        roundType: first_rounds,
                       )),
             );
             isRound = true;
@@ -158,11 +178,12 @@ class _ScoreBoardState extends State<ScoreBoard> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => outcomes.OutputRounds(
+                  builder: (context) => Outcomes.OutputRounds(
                         numberOfPlayers: players.length,
                         playersName:
                             players.map((player) => player.name).toList(),
                         players: players,
+                        roundType: for_last,
                       )),
             );
             isRound = false;
