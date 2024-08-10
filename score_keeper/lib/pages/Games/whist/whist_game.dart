@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:score_keeper/pages/Games/whist/games_details.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/custom_listView.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/tab_bar.dart';
-// import 'dart:async';
 
 class WhistGame extends StatefulWidget {
   const WhistGame({super.key});
@@ -15,15 +14,13 @@ class _WhistGameState extends State<WhistGame> {
   int numberOfPlayers = 3;
   bool introducedAllNames = true;
   bool isListVisible = false; // first time the list is hidden
-  List<TextEditingController> players = [];
-  // Timer? _fadeaway;
+  List<TextEditingController> players = []; // players names
 
   @override
   void initState() {
     super.initState();
     // Initialize controllers for the default number of players
     players = List.generate(numberOfPlayers, (_) => TextEditingController());
-    // _fadeaway = Timer(Duration(seconds: 5) );
   }
 
   void submitButton() {
@@ -90,55 +87,67 @@ class _WhistGameState extends State<WhistGame> {
               icon: Icon(Icons.question_mark))
         ],
       ),
-      body: Column(
-        // mainAxisAlignment: MainAxisAlignment.center,
-        // crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text("Choose the number of players",
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            const Text(
+              "Choose the number of players",
               style: TextStyle(
                 fontSize: 20,
-              )),
-          Container(
-            child: CustomTabBar(
-                startIndex: 3,
-                stopIndex: 6,
-                step: 1,
-                selectedNumber: numberOfPlayers,
-                onNumberSelected: (int selectedNumber) {
-                  setState(() {
-                    numberOfPlayers = selectedNumber;
-                    isListVisible = true;
-                    updateControllers(selectedNumber);
-                  });
-                }),
-          ),
-          if (isListVisible)
-            CustomListview(
-              value: numberOfPlayers,
-              areaController: players,
+              ),
             ),
-          Spacer(), // Takes up remaining space
-          Padding(
-            padding: const EdgeInsets.only(
-                bottom: 20.0), // Add space from the bottom
-            child: AnimatedOpacity(
-              opacity: isListVisible && !introducedAllNames ? 1.0 : 0.0,
-              duration: Duration(seconds: 1),
-              child: Container(
-                padding: EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Colors.black, width: 2.0),
+            const SizedBox(height: 10),
+            CustomTabBar(
+              startIndex: 3,
+              stopIndex: 6,
+              step: 1,
+              selectedNumber: numberOfPlayers,
+              onNumberSelected: (int selectedNumber) {
+                setState(() {
+                  numberOfPlayers = selectedNumber;
+                  isListVisible = true;
+                  updateControllers(selectedNumber);
+                });
+              },
+            ),
+            if (isListVisible)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: CustomListview(
+                  value: numberOfPlayers,
+                  areaController: players,
                 ),
-                child: const Text(
-                  "Warning: Please insert all players names before proceeding with the game!",
-                  style: TextStyle(color: Colors.black, fontSize: 16.0),
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: CustomListview(
+                  value: 3,
+                  areaController: players,
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: AnimatedOpacity(
+                opacity: isListVisible && !introducedAllNames ? 1.0 : 0.0,
+                duration: Duration(seconds: 1),
+                child: Container(
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    borderRadius: BorderRadius.circular(8.0),
+                    border: Border.all(color: Colors.black, width: 2.0),
+                  ),
+                  child: const Text(
+                    "Warning: Please insert all players' names before proceeding with the game!",
+                    style: TextStyle(color: Colors.black, fontSize: 16.0),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,

@@ -21,13 +21,15 @@ class CustomTabBar extends StatefulWidget {
 }
 
 class _CustomTabBarState extends State<CustomTabBar> {
-  late int _selectedNumber = 0;
+  late int _selectedNumber = widget.selectedNumber;
 
-  AnimatedContainer buildContainer(bool isSelected, int number) {
+  AnimatedContainer buildContainer(bool isSelected, int number, double width) {
     return AnimatedContainer(
       duration: Duration(milliseconds: 300),
-      height: 40,
-      width: 40,
+
+      height:
+          width, // Make the height equal to the width to maintain square shape
+      width: width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7),
         color: isSelected ? Colors.grey : Colors.black,
@@ -41,7 +43,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
     );
   }
 
-  Container verticalPipeline() {
+  Container verticalPipeline(double height) {
     return Container(
       width: 2,
       height: 20,
@@ -54,34 +56,44 @@ class _CustomTabBarState extends State<CustomTabBar> {
   Widget build(BuildContext context) {
     // Creating a list with the numbers needed
     List<int> numbers = List.generate(widget.stopIndex - widget.startIndex + 1,
-        (int index) => (widget.startIndex + index) * widget.step);
+        (int index) => widget.startIndex + index);
 
     return Padding(
       padding: const EdgeInsets.all(25),
-      child: Container(
-        height: 50,
-        decoration: BoxDecoration(
-          color: Colors.black,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: numbers.expand((number) {
-            bool isSelected = number == _selectedNumber;
-            return [
-              GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedNumber = number;
-                    widget.onNumberSelected(number);
-                  });
-                },
-                child: buildContainer(isSelected, number),
-              ),
-              if (number != numbers.last) verticalPipeline()
-            ];
-          }).toList(),
-        ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          // Calculate the width of each container based on the available width
+          double containerWidth =
+              (constraints.maxWidth - (numbers.length - 1) * 12) /
+                  numbers.length;
+          double containerHeight = 40.0; // Fixed height
+
+          return Container(
+            height: containerHeight,
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: numbers.expand((number) {
+                bool isSelected = number == _selectedNumber;
+                return [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedNumber = number;
+                        widget.onNumberSelected(number);
+                      });
+                    },
+                    child: buildContainer(isSelected, number, containerWidth),
+                  ),
+                  if (number != numbers.last) verticalPipeline(containerHeight)
+                ];
+              }).toList(),
+            ),
+          );
+        },
       ),
     );
   }
