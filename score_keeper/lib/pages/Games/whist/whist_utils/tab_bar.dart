@@ -13,8 +13,8 @@ class CustomTabBar extends StatefulWidget {
     required this.step,
     required this.selectedNumber,
     required this.onNumberSelected,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   _CustomTabBarState createState() => _CustomTabBarState();
@@ -37,7 +37,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
       child: Center(
         child: Text(
           "$number",
-          style: TextStyle(color: Colors.white, fontSize: 25),
+          style: const TextStyle(color: Colors.white, fontSize: 25),
         ),
       ),
     );

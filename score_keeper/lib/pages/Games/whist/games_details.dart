@@ -29,7 +29,7 @@ class _GamesDetailsState extends State<GamesDetails> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Game Mode')),
+      appBar: AppBar(title: const Text('Game Mode')),
       body: Padding(
         padding:
             const EdgeInsets.all(16.0), // Add padding around the entire body
@@ -45,7 +45,7 @@ class _GamesDetailsState extends State<GamesDetails> {
                 fontSize: 24.0,
               ),
             ),
-            SizedBox(height: 16.0), // Space between title and description
+            const SizedBox(height: 16.0), // Space between title and description
 
             // Description text
             Text(
@@ -55,7 +55,7 @@ class _GamesDetailsState extends State<GamesDetails> {
                 color: Colors.grey[700],
               ),
             ),
-            SizedBox(height: 32.0),
+            const SizedBox(height: 32.0),
 
             // Row with text and switch button
             const Row(
@@ -91,7 +91,7 @@ class _GamesDetailsState extends State<GamesDetails> {
                 fontSize: 24.0,
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Row(
               children: [
                 Expanded(
@@ -141,7 +141,7 @@ class _GamesDetailsState extends State<GamesDetails> {
                 fontSize: 24.0,
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Row(
               children: [
                 Expanded(
@@ -177,6 +177,7 @@ class _GamesDetailsState extends State<GamesDetails> {
                       playersName: widget.players,
                       numberOfPlayers: widget.numberOfPlayers,
                       gameType: gameType,
+                      rounds: 3 * widget.numberOfPlayers * 3 + 12,
                     )),
           );
         },

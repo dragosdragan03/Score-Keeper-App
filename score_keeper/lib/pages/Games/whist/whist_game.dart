@@ -62,7 +62,7 @@ class _WhistGameState extends State<WhistGame> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Whist Game'),
+        title: const Text('Whist Game'),
         actions: [
           IconButton(
               onPressed: () {
@@ -84,7 +84,7 @@ class _WhistGameState extends State<WhistGame> {
                   ),
                 );
               },
-              icon: Icon(Icons.question_mark))
+              icon: const Icon(Icons.question_mark))
         ],
       ),
       body: SingleChildScrollView(
@@ -95,6 +95,43 @@ class _WhistGameState extends State<WhistGame> {
               "Choose the number of players",
               style: TextStyle(
                 fontSize: 20,
+              )),
+          Container(
+            child: CustomTabBar(
+                startIndex: 3,
+                stopIndex: 6,
+                step: 1,
+                selectedNumber: numberOfPlayers,
+                onNumberSelected: (int selectedNumber) {
+                  setState(() {
+                    numberOfPlayers = selectedNumber;
+                    isListVisible = true;
+                    updateControllers(selectedNumber);
+                  });
+                }),
+          ),
+          if (isListVisible)
+            CustomListview(
+              value: numberOfPlayers,
+              areaController: players,
+            ),
+          const Spacer(), // Takes up remaining space
+          Padding(
+            padding: const EdgeInsets.only(
+                bottom: 20.0), // Add space from the bottom
+            child: AnimatedOpacity(
+              opacity: isListVisible && !introducedAllNames ? 1.0 : 0.0,
+              duration: const Duration(seconds: 1),
+              child: Container(
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  borderRadius: BorderRadius.circular(8.0),
+                  border: Border.all(color: Colors.black, width: 2.0),
+                ),
+                child: const Text(
+                  "Warning: Please insert all players names before proceeding with the game!",
+                  style: TextStyle(color: Colors.black, fontSize: 16.0),
               ),
             ),
             const SizedBox(height: 10),

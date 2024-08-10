@@ -7,12 +7,14 @@ class InputRounds extends StatefulWidget {
   final List<String> playersName;
   final List<Player> players;
   final bool GameType;
+  final int roundType;
 
   const InputRounds({
     required this.numberOfPlayers,
     required this.playersName,
     required this.players,
     required this.GameType,
+    required this.roundType,
     super.key,
   });
 
@@ -67,7 +69,7 @@ class _InputRoundsState extends State<InputRounds> {
                         Center(
                           child: CustomTabBar(
                             startIndex: 0,
-                            stopIndex: 8,
+                            stopIndex: widget.roundType,
                             step: 1,
                             selectedNumber: _selectedNumbers[index],
                             onNumberSelected: (number) =>
