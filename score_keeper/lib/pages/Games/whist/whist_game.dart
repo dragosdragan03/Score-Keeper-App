@@ -14,7 +14,7 @@ class _WhistGameState extends State<WhistGame> {
   int numberOfPlayers = 3;
   bool introducedAllNames = true;
   bool isListVisible = false; // first time the list is hidden
-  List<TextEditingController> players = []; // players names
+  List<TextEditingController> players = [];
 
   @override
   void initState() {
@@ -62,7 +62,7 @@ class _WhistGameState extends State<WhistGame> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Whist Game'),
+        title: Text('Whist Game'),
         actions: [
           IconButton(
               onPressed: () {
@@ -84,7 +84,7 @@ class _WhistGameState extends State<WhistGame> {
                   ),
                 );
               },
-              icon: const Icon(Icons.question_mark))
+              icon: Icon(Icons.question_mark))
         ],
       ),
       body: SingleChildScrollView(
@@ -95,43 +95,6 @@ class _WhistGameState extends State<WhistGame> {
               "Choose the number of players",
               style: TextStyle(
                 fontSize: 20,
-              )),
-          Container(
-            child: CustomTabBar(
-                startIndex: 3,
-                stopIndex: 6,
-                step: 1,
-                selectedNumber: numberOfPlayers,
-                onNumberSelected: (int selectedNumber) {
-                  setState(() {
-                    numberOfPlayers = selectedNumber;
-                    isListVisible = true;
-                    updateControllers(selectedNumber);
-                  });
-                }),
-          ),
-          if (isListVisible)
-            CustomListview(
-              value: numberOfPlayers,
-              areaController: players,
-            ),
-          const Spacer(), // Takes up remaining space
-          Padding(
-            padding: const EdgeInsets.only(
-                bottom: 20.0), // Add space from the bottom
-            child: AnimatedOpacity(
-              opacity: isListVisible && !introducedAllNames ? 1.0 : 0.0,
-              duration: const Duration(seconds: 1),
-              child: Container(
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(8.0),
-                  border: Border.all(color: Colors.black, width: 2.0),
-                ),
-                child: const Text(
-                  "Warning: Please insert all players names before proceeding with the game!",
-                  style: TextStyle(color: Colors.black, fontSize: 16.0),
               ),
             ),
             const SizedBox(height: 10),
@@ -155,15 +118,8 @@ class _WhistGameState extends State<WhistGame> {
                   value: numberOfPlayers,
                   areaController: players,
                 ),
-              )
-            else
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: CustomListview(
-                  value: 3,
-                  areaController: players,
-                ),
               ),
+            if (isListVisible) const SizedBox(height: 20),
             Padding(
               padding: const EdgeInsets.only(bottom: 20.0),
               child: AnimatedOpacity(
