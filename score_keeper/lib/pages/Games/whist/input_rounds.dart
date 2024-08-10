@@ -8,7 +8,7 @@ class InputRounds extends StatefulWidget {
   final List<Player> players;
   final bool GameType;
   final int roundType;
-
+  
   const InputRounds({
     required this.numberOfPlayers,
     required this.playersName,
@@ -61,7 +61,7 @@ class _InputRoundsState extends State<InputRounds> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "\tInput bid for " + widget.playersName[index] + ":",
+                          "\tInput bid for ${widget.playersName[index]}:",
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
@@ -87,7 +87,7 @@ class _InputRoundsState extends State<InputRounds> {
               child: ElevatedButton(
                 onPressed: _confirmAndGoBack,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 0, 0, 0),
+                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                   foregroundColor: Colors.white,
                   shadowColor: Colors.black,
                   elevation: 5,

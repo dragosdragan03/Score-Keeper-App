@@ -10,12 +10,6 @@ class TeamScoreDisplay extends StatefulWidget {
 }
 
 class _TeamScoreDisplayState extends State<TeamScoreDisplay> {
-  void buttonPress() {
-    setState(() {
-      widget.team.incrementScore();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -27,7 +21,7 @@ class _TeamScoreDisplayState extends State<TeamScoreDisplay> {
             "Team ${widget.team.teamName}",
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: Colors.blueAccent,
+              color: Colors.black,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),

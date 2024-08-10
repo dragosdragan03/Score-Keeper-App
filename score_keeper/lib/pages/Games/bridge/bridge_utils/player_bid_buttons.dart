@@ -43,7 +43,7 @@ class _PlayerBidButtonsState extends State<PlayerBidButtons> {
               ),
               onPressed: () {
                 // Placeholder for onPressed logic
-                gameProvider.setWinner(number);
+                gameProvider.setBidWinner(number);
               },
               child: Text(
                 players[number],

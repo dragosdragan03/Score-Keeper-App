@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/bridge/bid_page.dart';
 import 'package:score_keeper/pages/Games/bridge/bridge_utils/team_score_display.dart';
 import 'package:score_keeper/pages/Games/bridge/bridge_utils/game_provider.dart';
-import 'package:score_keeper/pages/Games/bridge/team_page.dart';
 
 class MainBridgePage extends StatefulWidget {
   const MainBridgePage({super.key});
@@ -44,38 +43,40 @@ class _MainBridgePageState extends State<MainBridgePage> {
               icon: const Icon(Icons.question_mark))
         ],
       ),
-      body: Stack(children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 16.0),
-              Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 16.0),
+                Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: TeamScoreDisplay(team: gameProvider.teamA),
+                  ),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: TeamScoreDisplay(team: gameProvider.teamA),
+                const SizedBox(height: 16.0),
+                Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: TeamScoreDisplay(team: gameProvider.teamB),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16.0),
-              Card(
-                elevation: 4,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: TeamScoreDisplay(team: gameProvider.teamB),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ]),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         onPressed: () {
@@ -86,7 +87,8 @@ class _MainBridgePageState extends State<MainBridgePage> {
                         value: gameProvider,
                         child: const BidPage(),
                       )));
-          gameProvider.setWinner(-1);
+          gameProvider.setBidWinner(-1);
+          gameProvider.incrementGame();
         },
         child: const Icon(
           Icons.navigate_next_outlined,
