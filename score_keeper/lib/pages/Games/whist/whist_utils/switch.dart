@@ -1,18 +1,32 @@
 import 'package:flutter/material.dart';
 
 class SwitchButton extends StatefulWidget {
-  const SwitchButton({super.key});
+  final bool isOn;
+  final ValueChanged<bool> onToggle; // This is the callback function
+
+  const SwitchButton({
+    required this.isOn,
+    required this.onToggle,
+    super.key,
+  });
 
   @override
   State<SwitchButton> createState() => _SwitchButtonState();
 }
 
 class _SwitchButtonState extends State<SwitchButton> {
-  bool _isSwitched = false;
+  late bool _isSwitched;
+
+  @override
+  void initState() {
+    super.initState();
+    _isSwitched = widget.isOn; // Initialize with the value passed from parent
+  }
 
   void _toggleSwitch() {
     setState(() {
       _isSwitched = !_isSwitched;
+      widget.onToggle(_isSwitched); // Notify parent widget about the toggle
     });
   }
 
@@ -26,6 +40,8 @@ class _SwitchButtonState extends State<SwitchButton> {
           onChanged: (bool value) {
             setState(() {
               _isSwitched = value;
+              widget.onToggle(
+                  _isSwitched); // Notify parent widget about the toggle
             });
           },
           activeColor: Colors.red,

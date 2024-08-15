@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/whist/games_details.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/custom_listView.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/tab_bar.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart'; // Import ScoreBoard
 
 class WhistGame extends StatefulWidget {
   const WhistGame({super.key});
@@ -13,13 +16,12 @@ class WhistGame extends StatefulWidget {
 class _WhistGameState extends State<WhistGame> {
   int numberOfPlayers = 3;
   bool introducedAllNames = true;
-  bool isListVisible = false; // first time the list is hidden
+  bool isListVisible = false;
   List<TextEditingController> players = [];
 
   @override
   void initState() {
     super.initState();
-    // Initialize controllers for the default number of players
     players = List.generate(numberOfPlayers, (_) => TextEditingController());
   }
 
@@ -35,12 +37,29 @@ class _WhistGameState extends State<WhistGame> {
     });
 
     if (introducedAllNames) {
+      final playerNames = players.map((controller) => controller.text).toList();
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => ChangeNotifierProvider.value(
+      //       value: gameProvider,
+      //       child: const BidPage(),
+      //     ),
+      //   ),
+      // );
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => GamesDetails(
-            players: players.map((controller) => controller.text).toList(),
-            numberOfPlayers: numberOfPlayers,
+          builder: (context) => ChangeNotifierProvider(
+            create: (context) => GameProviderWhist(
+              playerNames
+                  .map((name) =>
+                      Player(name: name, score: 0, roundsWon: 0, roundsLost: 0))
+                  .toList(),
+            ),
+            child: GamesDetails(
+              numberOfPlayers: numberOfPlayers,
+            ),
           ),
         ),
       );
@@ -49,11 +68,9 @@ class _WhistGameState extends State<WhistGame> {
 
   void updateControllers(int newCount) {
     if (newCount > players.length) {
-      // Add more controllers if the new count is greater
       players.addAll(List.generate(
           newCount - players.length, (_) => TextEditingController()));
     } else if (newCount < players.length) {
-      // Remove controllers if the new count is lesser
       players.removeRange(newCount, players.length);
     }
   }

@@ -1,18 +1,18 @@
 // lib/input_rounds.dart
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/tab_bar.dart';
 
 class OutputRounds extends StatefulWidget {
   final int numberOfPlayers;
-  final List<String> playersName;
   final List<Player> players;
   final roundType;
 
   const OutputRounds({
     required this.numberOfPlayers,
-    required this.playersName,
     required this.players,
     required this.roundType,
     super.key,
@@ -37,12 +37,18 @@ class _OutputState extends State<OutputRounds> {
     });
   }
 
-  void _confirmAndGoBack() {
-    Navigator.pop(context);
+  void _confirmAndGoBack(GameProviderWhist gameProvider) {
+    setState(() {
+      gameProvider.setResult(_selectedNumbers);
+      Navigator.pop(context);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    GameProviderWhist gameProvider =
+        Provider.of<GameProviderWhist>(context, listen: false);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Results'),
@@ -61,7 +67,7 @@ class _OutputState extends State<OutputRounds> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "\t${widget.playersName[index]}'s results:",
+                          "\t${widget.players[index].name}'s results:",
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
@@ -85,7 +91,7 @@ class _OutputState extends State<OutputRounds> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                onPressed: _confirmAndGoBack,
+                onPressed: () => _confirmAndGoBack(gameProvider),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                   foregroundColor: Colors.white,

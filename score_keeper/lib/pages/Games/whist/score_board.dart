@@ -1,32 +1,22 @@
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:score_keeper/pages/Games/whist/whist_game.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/optionsButton.dart';
-import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart';
-import 'package:score_keeper/pages/Games/whist/input_rounds.dart' as Bids;
-import 'package:score_keeper/pages/Games/whist/whist_utils/output_rounds.dart'
-    as Outcomes;
-
-bool isRound = false;
-
-bool unlock = false; // pentru permutari
-
-int to7_rounds = 6,
-    middle_rounds = 0,
-    to_2rounds = 6,
-    last_rounds = 0,
-    for_last = 0;
+import 'package:score_keeper/pages/Games/whist/input_rounds.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/output_rounds.dart';
 
 class ScoreBoard extends StatefulWidget {
-  final int rounds;
+  final bool gameType; // if the game is played 1..8..1 or 8..1..8
+  final int streakBonusPoints;
+  final bool replayRound;
   final int numberOfPlayers;
-  final List<String> playersName;
-  final bool gameType;
 
   const ScoreBoard({
     required this.numberOfPlayers,
-    required this.playersName,
     required this.gameType,
-    required this.rounds,
+    required this.streakBonusPoints,
+    required this.replayRound,
     super.key,
   });
 
@@ -35,36 +25,22 @@ class ScoreBoard extends StatefulWidget {
 }
 
 class _ScoreBoardState extends State<ScoreBoard> {
-  int first_rounds = 0;
-  List<Player> players = [];
-  String necessaryCard() {
-    if (widget.numberOfPlayers == 3) {
-      return "3 players: Ace to 9.";
-    } else if (widget.numberOfPlayers == 4) {
-      return "4 players: Ace to 7.";
-    } else if (widget.numberOfPlayers == 5) {
-      return "5 players: Ace to 5.";
-    } else {
-      return "6 players: Ace to 3.";
-    }
-  }
+  bool specialRounds = false; // if is on false this means it starts with 1
+  bool isRoundOngoing = false;
+  bool unlock = false; // used for player rotation
+  int numberOfRounds = 0;
+  int roundNumber = 0;
 
   @override
   void initState() {
     super.initState();
-
-    for (var name in widget.playersName) {
-      Player player = new Player(
-        name: name,
-        score: 0,
-        roundsWon: 0,
-        roundsLost: 0,
-      );
-      players.add(player);
-      first_rounds = widget.numberOfPlayers;
-      middle_rounds = widget.numberOfPlayers;
-      last_rounds = widget.numberOfPlayers;
-    }
+    numberOfRounds = 12 + 3 * widget.numberOfPlayers;
+    specialRounds = widget
+        .gameType; // if is on false this means it starts with 1 otherwise it start with 8
+    if (specialRounds) // this mean it start with 8
+      roundNumber = 8;
+    else
+      roundNumber = 1;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       showDialog(
         context: context,
@@ -83,7 +59,7 @@ class _ScoreBoardState extends State<ScoreBoard> {
               Text(
                 necessaryCard(),
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18),
+                style: const TextStyle(fontSize: 18),
               ),
             ],
           ),
@@ -100,41 +76,150 @@ class _ScoreBoardState extends State<ScoreBoard> {
     });
   }
 
-  List<DropdownMenuItem<dynamic>>? items = [];
+  String necessaryCard() {
+    switch (widget.numberOfPlayers) {
+      case 3:
+        return "3 players: Ace to 9.";
+      case 4:
+        return "4 players: Ace to 7.";
+      case 5:
+        return "5 players: Ace to 5.";
+      default:
+        return "6 players: Ace to 3.";
+    }
+  }
+
+  int firstLastRounds() {
+    if (!specialRounds) {
+      // if is on false it means it start with 1
+      return 1;
+    } else {
+      return 8;
+    }
+  }
+
+  int middleGame() {
+    if (!specialRounds) {
+      // it means is ascendent
+      roundNumber++;
+      return roundNumber;
+    }
+    // it means is descendent
+    roundNumber--;
+    return roundNumber;
+  }
+
+  void handleRoundButtonPress(GameProviderWhist gameProvider) {
+    int startMiddleRounds = widget.numberOfPlayers + 6, // 8/1 rounds
+        stopMiddleRounds = 2 * widget.numberOfPlayers + 6,
+        startLastRounds = 2 * widget.numberOfPlayers + 12; // final rounds 1/8
+
+    if (!isRoundOngoing) {
+      // if is no round ongoing (you have to enter the bids)
+      if ((gameProvider.roundNumber <=
+              widget.numberOfPlayers) || // this means are first rounds
+          (startMiddleRounds < gameProvider.roundNumber &&
+              gameProvider.roundNumber <=
+                  stopMiddleRounds) || // this means are the middle rounds
+          (startLastRounds < gameProvider.roundNumber &&
+              gameProvider.roundNumber < numberOfRounds)) {
+        // this mean are the last rounds
+        roundNumber = firstLastRounds();
+      } else if ((widget.numberOfPlayers < gameProvider.roundNumber &&
+              gameProvider.roundNumber <= startMiddleRounds) ||
+          (stopMiddleRounds < gameProvider.roundNumber &&
+              gameProvider.roundNumber <= startLastRounds)) {
+        roundNumber = middleGame();
+      } else if (gameProvider.roundNumber == numberOfRounds + 1) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const WhistGame(),
+          ),
+        );
+      }
+
+      if (gameProvider.roundNumber == startMiddleRounds) {
+        specialRounds = !specialRounds;
+      } else if (gameProvider.roundNumber == startLastRounds) {
+        specialRounds = !specialRounds;
+      }
+
+      print("Input Round Type: $roundNumber\n\n");
+      print("RoundNumber: ${gameProvider.roundNumber}\n\n");
+      gameProvider.incrementRoundNumber();
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChangeNotifierProvider.value(
+            value: gameProvider,
+            child: InputRounds(
+              numberOfPlayers: widget.numberOfPlayers,
+              players: gameProvider.players,
+              roundType: roundNumber,
+            ),
+          ),
+        ),
+      );
+
+      setState(() {
+        isRoundOngoing = true;
+      });
+    } else {
+      print("Ouput Round Type: $roundNumber\n\n");
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChangeNotifierProvider.value(
+            value: gameProvider,
+            child: OutputRounds(
+              numberOfPlayers: widget.numberOfPlayers,
+              players: gameProvider.players,
+              roundType: roundNumber,
+            ),
+          ),
+        ),
+      );
+      setState(() {
+        isRoundOngoing = false;
+        unlock = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final gameProvider = Provider.of<GameProviderWhist>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Score Board'),
         actions: const [OptionsButton()],
       ),
       body: ListView.separated(
-        itemCount: widget.playersName.length,
+        itemCount: widget.numberOfPlayers,
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
             tileColor: Colors.blueGrey[200],
             title: Row(
-              mainAxisAlignment: MainAxisAlignment
-                  .spaceBetween, // Distribute space between the name and score
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  players[index].name,
+                  gameProvider.players[index].name,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  'Score: ${players[index].score}', // Display the player's score
+                  'Score: ${gameProvider.players[index].score}',
                   style: const TextStyle(
                     fontSize: 16,
                   ),
                 ),
               ],
             ),
-            onTap: () {
-              // Add any desired action here
-            },
           );
         },
         separatorBuilder: (BuildContext context, int index) => const Divider(
@@ -142,54 +227,7 @@ class _ScoreBoardState extends State<ScoreBoard> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          int round_type = 0;
-          if (!isRound) {
-            if (unlock) {
-              Player lastPlayer = players.removeLast();
-              players.insert(0, lastPlayer);
-            }
-            if (first_rounds >= 0) {
-              round_type = 1;
-              first_rounds--;
-            } else {
-              if (to7_rounds >= 0) {
-                round_type = to7_rounds + 1 - 1;
-                to7_rounds--;
-              } else {
-                round_type = 8;
-              }
-            }
-            for_last = round_type;
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => Bids.InputRounds(
-                        numberOfPlayers: players.length,
-                        playersName:
-                            players.map((player) => player.name).toList(),
-                        players: players,
-                        GameType: true,
-                        roundType: first_rounds,
-                      )),
-            );
-            isRound = true;
-          } else {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => Outcomes.OutputRounds(
-                        numberOfPlayers: players.length,
-                        playersName:
-                            players.map((player) => player.name).toList(),
-                        players: players,
-                        roundType: for_last,
-                      )),
-            );
-            isRound = false;
-            unlock = true;
-          }
-        },
+        onPressed: () => handleRoundButtonPress(gameProvider),
         backgroundColor: Colors.black,
         foregroundColor: Colors.white,
         child: const Icon(Icons.edit),

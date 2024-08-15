@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:item_count_number_button/item_count_number_button.dart';
+import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/whist/score_board.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/switch.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart';
 
 bool gameType = false;
 
 class GamesDetails extends StatefulWidget {
   final int numberOfPlayers;
-  final List<String> players;
+
   const GamesDetails({
     required this.numberOfPlayers,
-    required this.players,
     super.key,
   });
 
@@ -21,6 +23,7 @@ class GamesDetails extends StatefulWidget {
 
 class _GamesDetailsState extends State<GamesDetails> {
   num streakPoints = 0;
+  bool gameType = false; // to verify if the game is played 1..8..1 or 8..1..8
   bool replayRound = false;
   bool streakBonus = false; // consider it is not selected
   int numberOfRounds = 0;
@@ -28,6 +31,7 @@ class _GamesDetailsState extends State<GamesDetails> {
 
   @override
   Widget build(BuildContext context) {
+    final gameProvider = Provider.of<GameProviderWhist>(context);
     return Scaffold(
       appBar: AppBar(title: const Text('Game Mode')),
       body: Padding(
@@ -58,11 +62,11 @@ class _GamesDetailsState extends State<GamesDetails> {
             const SizedBox(height: 32.0),
 
             // Row with text and switch button
-            const Row(
+            Row(
               mainAxisAlignment:
                   MainAxisAlignment.center, // Center align row items
               children: [
-                Text(
+                const Text(
                   "1..8..1",
                   style: TextStyle(
                     fontSize: 18.0,
@@ -70,10 +74,20 @@ class _GamesDetailsState extends State<GamesDetails> {
                   ),
                 ),
                 // gameType = false;
-                SizedBox(width: 20.0), // Space between text and switch
-                SwitchButton(),
-                SizedBox(width: 20.0), // Space between switch and text
-                Text(
+                const SizedBox(width: 20.0), // Space between text and switch
+                SwitchButton(
+                  isOn: gameType,
+                  onToggle: (value) {
+                    setState(() {
+                      gameType = value;
+                    });
+                    print("gameType toggled: $gameType");
+                  },
+                ),
+                // if(gameType) // if it is true it means is 8..1..8
+                // gameProvider.roundNumber = 1;
+                const SizedBox(width: 20.0), // Space between switch and text
+                const Text(
                   "8..1..8",
                   style: TextStyle(
                     fontSize: 18.0,
@@ -173,12 +187,24 @@ class _GamesDetailsState extends State<GamesDetails> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ScoreBoard(
-                      playersName: widget.players,
-                      numberOfPlayers: widget.numberOfPlayers,
-                      gameType: gameType,
-                      rounds: 3 * widget.numberOfPlayers * 3 + 12,
-                    )),
+              builder: (context) => ChangeNotifierProvider(
+                create: (context) => GameProviderWhist(
+                  gameProvider.players
+                      .map((players) => Player(
+                          name: players.name,
+                          score: 0,
+                          roundsWon: 0,
+                          roundsLost: 0))
+                      .toList(),
+                ),
+                child: ScoreBoard(
+                  numberOfPlayers: widget.numberOfPlayers,
+                  gameType: gameType,
+                  streakBonusPoints: streakPoints.toInt(),
+                  replayRound: replayRound,
+                ),
+              ),
+            ),
           );
         },
         child: const Icon(

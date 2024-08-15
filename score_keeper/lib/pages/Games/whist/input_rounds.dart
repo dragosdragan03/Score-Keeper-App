@@ -1,19 +1,18 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/tab_bar.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart';
 
 class InputRounds extends StatefulWidget {
   final int numberOfPlayers;
-  final List<String> playersName;
   final List<Player> players;
-  final bool GameType;
   final int roundType;
-  
+
   const InputRounds({
     required this.numberOfPlayers,
-    required this.playersName,
     required this.players,
-    required this.GameType,
     required this.roundType,
     super.key,
   });
@@ -37,12 +36,17 @@ class _InputRoundsState extends State<InputRounds> {
     });
   }
 
-  void _confirmAndGoBack() {
-    Navigator.pop(context);
+  void confirmAndGoBack(GameProviderWhist gameProvider) {
+    setState(() {
+      gameProvider.setBids(_selectedNumbers);
+      Navigator.pop(context);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    GameProviderWhist gameProvider =
+        Provider.of<GameProviderWhist>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Input Bids'),
@@ -61,7 +65,7 @@ class _InputRoundsState extends State<InputRounds> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "\tInput bid for ${widget.playersName[index]}:",
+                          "\tInput bid for ${widget.players[index].name}:",
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
@@ -85,7 +89,7 @@ class _InputRoundsState extends State<InputRounds> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                onPressed: _confirmAndGoBack,
+                onPressed: () => confirmAndGoBack(gameProvider),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                   foregroundColor: Colors.white,
