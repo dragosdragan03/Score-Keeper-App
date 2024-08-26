@@ -21,7 +21,7 @@ class _PlayerBidButtonsState extends State<PlayerBidButtons> {
     List<int> playerOrder = [0, 2, 1, 3];
     final gameProvider = Provider.of<GameProvider>(context);
 
-    final gameNumber = gameProvider.gameNumber;
+    final gameNumber = gameProvider.roundNumber;
     playerOrder = rotateList(playerOrder, gameNumber);
     final players = gameProvider.players;
 

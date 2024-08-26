@@ -34,11 +34,12 @@ class _BidPageState extends State<BidPage> {
             MaterialPageRoute(
                 builder: (context) => ChangeNotifierProvider.value(
                       value: gameProvider,
-                      child: const TricksPage(),
+                      child: TricksPage(),
                     )));
         gameProvider.chosenTrickIndex =
             _colorsKey.currentState!.getSelectedNumber();
-        gameProvider.currentBid = _bidKey.currentState!.getSelectedNumber() + 7;
+        gameProvider.currentBid = _bidKey.currentState!.getSelectedNumber() + 1;
+        gameProvider.tricksWon = _bidKey.currentState!.getSelectedNumber() + 7;
       }
     });
   }
@@ -166,7 +167,7 @@ class _BidPageState extends State<BidPage> {
                       children: List.generate(
                         7,
                         (int index) => Text(
-                          "${index + 7}",
+                          "${index + 1}",
                           style: const TextStyle(color: Colors.white),
                         ),
                       ),
