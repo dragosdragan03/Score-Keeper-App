@@ -12,20 +12,19 @@ class TricksPage extends StatefulWidget {
 }
 
 class _TricksPageState extends State<TricksPage> {
-  void onPressed(GameProvider gameProvider) {
+  void onPressed(GameProvider gameProvider, int tricksWon) {
     setState(() {
-      gameProvider.calculateScore(tricksWon);
+      gameProvider.calculateScore();
       Navigator.pop(context);
     });
   }
-
-  int tricksWon = 0;
 
   @override
   Widget build(BuildContext context) {
     GameProvider gameProvider =
         Provider.of<GameProvider>(context, listen: false);
     double cardWidth = MediaQuery.of(context).size.width * 0.8;
+    int tricksWon = gameProvider.tricksWon;
 
     return Scaffold(
       appBar: AppBar(
@@ -103,39 +102,65 @@ class _TricksPageState extends State<TricksPage> {
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Bid",
-                          style:
-                              Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "${gameProvider.currentBid}",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyLarge
-                                  ?.copyWith(fontSize: 24.0),
-                            ),
-                            SizedBox(
-                              height: 24.0,
-                              child: constants.Constants
-                                  .symbols[gameProvider.chosenTrickIndex],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Bid",
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                          const SizedBox(height: 8.0),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const SizedBox(width: 8),
+
+                              // Display the current bid
+                              Text(
+                                "${gameProvider.currentBid}",
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyLarge
+                                    ?.copyWith(
+                                      fontSize: 24.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+
+                              const SizedBox(width: 8),
+
+                              Container(
+                                height: 35,
+                                width: 35,
+                                alignment: Alignment.center,
+                                child: FittedBox(
+                                  fit: BoxFit.contain,
+                                  child: gameProvider.chosenTrickIndex == 4
+                                      ? const Text(
+                                          "NT",
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        )
+                                      : constants.Constants.symbols[
+                                          gameProvider.chosenTrickIndex],
+                                ),
+                              ),
+
+                              const SizedBox(width: 8),
+                            ],
+                          ),
+                        ],
+                      )),
                 ),
               ),
               const SizedBox(height: 24.0), // Add spacing before NumberPicker
@@ -148,7 +173,8 @@ class _TricksPageState extends State<TricksPage> {
                   value: tricksWon,
                   minValue: 0,
                   maxValue: 13,
-                  onChanged: (value) => setState(() => tricksWon = value),
+                  onChanged: (value) =>
+                      setState(() => gameProvider.tricksWon = value),
                 ),
               ),
             ],
@@ -158,7 +184,7 @@ class _TricksPageState extends State<TricksPage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         onPressed: () {
-          onPressed(gameProvider);
+          onPressed(gameProvider, tricksWon);
         },
         child: const Icon(
           Icons.navigate_next_outlined,
