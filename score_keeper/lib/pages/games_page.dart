@@ -49,7 +49,7 @@ class GamesPage extends StatelessWidget {
               _buildGameButton(
                 context,
                 icon: Icons.games,
-                label: 'Other',
+                label: 'Clasic Score',
                 destination: const OtherGames(),
               ),
             ],

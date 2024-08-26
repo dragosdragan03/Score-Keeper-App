@@ -6,6 +6,7 @@ class CustomTabBar extends StatefulWidget {
   final int step;
   final int selectedNumber;
   final ValueChanged<int> onNumberSelected;
+  final int offNumber;
 
   const CustomTabBar({
     required this.startIndex,
@@ -13,6 +14,7 @@ class CustomTabBar extends StatefulWidget {
     required this.step,
     required this.selectedNumber,
     required this.onNumberSelected,
+    required this.offNumber,
     super.key,
   });
 
@@ -24,22 +26,30 @@ class _CustomTabBarState extends State<CustomTabBar> {
   late int _selectedNumber = widget.selectedNumber;
 
   AnimatedContainer buildContainer(bool isSelected, int number, double width) {
-    return AnimatedContainer(
-      duration: Duration(milliseconds: 300),
+    bool isOffNumber = number == widget.offNumber;
 
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
       height:
           width, // Make the height equal to the width to maintain square shape
       width: width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7),
-        color: isSelected ? Colors.grey : Colors.black,
+        color: isOffNumber
+            ? Colors.transparent
+            : (isSelected ? Colors.grey : Colors.black),
       ),
-      child: Center(
-        child: Text(
-          "$number",
-          style: const TextStyle(color: Colors.white, fontSize: 25),
-        ),
-      ),
+      child: isOffNumber
+          ? null
+          : Center(
+              child: Text(
+                "$number",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 25,
+                ),
+              ),
+            ),
     );
   }
 
@@ -78,14 +88,17 @@ class _CustomTabBarState extends State<CustomTabBar> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: numbers.expand((number) {
                 bool isSelected = number == _selectedNumber;
+                bool isOffNumber = number == widget.offNumber;
                 return [
                   GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedNumber = number;
-                        widget.onNumberSelected(number);
-                      });
-                    },
+                    onTap: isOffNumber
+                        ? null // Prevent interaction if the number is offNumber
+                        : () {
+                            setState(() {
+                              _selectedNumber = number;
+                              widget.onNumberSelected(number);
+                            });
+                          },
                     child: buildContainer(isSelected, number, containerWidth),
                   ),
                   if (number != numbers.last) verticalPipeline(containerHeight)

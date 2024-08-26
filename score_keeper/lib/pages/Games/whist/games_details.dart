@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:item_count_number_button/item_count_number_button.dart';
+import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/whist/score_board.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/switch.dart';
-import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart';
 
 bool gameType = false;
 
@@ -22,12 +20,11 @@ class GamesDetails extends StatefulWidget {
 }
 
 class _GamesDetailsState extends State<GamesDetails> {
-  num streakPoints = 0;
+  int numberRoundToBonus = 5; // this is a standard number to get promoted
+  int streakPoints = 5;
   bool gameType = false; // to verify if the game is played 1..8..1 or 8..1..8
-  bool replayRound = false;
-  bool streakBonus = false; // consider it is not selected
-  int numberOfRounds = 0;
-  List<int> roudStreak = List.generate(3, (index) => (index + 1) * 5);
+  bool replayRound = true;
+  bool streakBonus = true; // consider it is not selected
 
   @override
   Widget build(BuildContext context) {
@@ -73,19 +70,23 @@ class _GamesDetailsState extends State<GamesDetails> {
                     color: Colors.black,
                   ),
                 ),
-                // gameType = false;
                 const SizedBox(width: 20.0), // Space between text and switch
                 SwitchButton(
                   isOn: gameType,
                   onToggle: (value) {
-                    setState(() {
-                      gameType = value;
-                    });
-                    print("gameType toggled: $gameType");
+                    setState(
+                      () {
+                        gameType = value;
+                        if (gameType) {
+                          // if is true this means it starts with 8
+                          gameProvider.updatePlayingRound(8);
+                        } else {
+                          gameProvider.updatePlayingRound(1);
+                        }
+                      },
+                    );
                   },
                 ),
-                // if(gameType) // if it is true it means is 8..1..8
-                // gameProvider.roundNumber = 1;
                 const SizedBox(width: 20.0), // Space between switch and text
                 const Text(
                   "8..1..8",
@@ -97,7 +98,6 @@ class _GamesDetailsState extends State<GamesDetails> {
               ],
             ),
             const SizedBox(height: 32.0),
-
             const Text(
               "Streak Bonus",
               style: TextStyle(
@@ -108,12 +108,12 @@ class _GamesDetailsState extends State<GamesDetails> {
             const SizedBox(height: 16.0),
             Row(
               children: [
-                Expanded(
+                const Expanded(
                   child: Text(
-                    "A player earns an award for a 7-game win or loss streak. Single-round games are not counted.",
+                    "Select whether a player get awarded for a win or loss streak across multiple rounds.",
                     style: TextStyle(
                       fontSize: 16.0,
-                      color: Colors.grey[700],
+                      color: const Color.fromARGB(255, 97, 97, 97),
                     ),
                   ),
                 ),
@@ -122,31 +122,82 @@ class _GamesDetailsState extends State<GamesDetails> {
                   onChanged: (bool value) {
                     setState(() {
                       streakBonus = value;
+                      gameProvider.setStreakBonus(streakBonus);
                     });
                   },
                   activeColor: Colors.green,
                 )
               ],
             ),
-            if (streakBonus) // if is true than show the bar
+            if (streakBonus) // if true, show the bar
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ItemCount(
-                    initialValue: streakPoints,
+                  const Expanded(
+                    child: Text(
+                      'No. Points',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 97, 97, 97),
+                        decoration: TextDecoration.underline,
+                      ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow
+                          .ellipsis, // Optional: to handle overflow text
+                    ),
+                  ),
+                  const SizedBox(
+                      width:
+                          10), // Optional: adds some space between text and picker
+                  NumberPicker(
+                    axis: Axis.horizontal,
+                    value: streakPoints,
                     minValue: 0,
                     maxValue: 15,
-                    decimalPlaces: 0,
                     onChanged: (value) {
                       setState(() {
                         streakPoints = value;
+                        gameProvider.setStreakBonusPoints(streakPoints);
                       });
                     },
-                    color: Colors.green, // Optional
                     textStyle: const TextStyle(fontSize: 20), // Optional
                   ),
                 ],
               ),
+            if (streakBonus)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Expanded(
+                    child: Text(
+                      'No. Rounds',
+                      style: TextStyle(
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 97, 97, 97),
+                        decoration: TextDecoration.underline,
+                      ),
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow
+                          .ellipsis, // Optional: to handle overflow text
+                    ),
+                  ),
+                  NumberPicker(
+                    axis: Axis.horizontal,
+                    value: numberRoundToBonus,
+                    minValue: 3,
+                    maxValue: 10,
+                    onChanged: (value) {
+                      setState(() {
+                        numberRoundToBonus = value;
+                        gameProvider.setStreakBonusPoints(streakPoints);
+                      });
+                    },
+                  ),
+                ],
+              ),
+
             const SizedBox(height: 32.0),
             const Text(
               "Replay Round",
@@ -172,10 +223,11 @@ class _GamesDetailsState extends State<GamesDetails> {
                   onChanged: (bool value) {
                     setState(() {
                       replayRound = value;
+                      gameProvider.setReplayRound(replayRound);
                     });
                   },
                   activeColor: Colors.green,
-                )
+                ),
               ],
             ),
           ],
@@ -187,16 +239,8 @@ class _GamesDetailsState extends State<GamesDetails> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ChangeNotifierProvider(
-                create: (context) => GameProviderWhist(
-                  gameProvider.players
-                      .map((players) => Player(
-                          name: players.name,
-                          score: 0,
-                          roundsWon: 0,
-                          roundsLost: 0))
-                      .toList(),
-                ),
+              builder: (context) => ChangeNotifierProvider.value(
+                value: gameProvider, // Pass the existing provider instance here
                 child: ScoreBoard(
                   numberOfPlayers: widget.numberOfPlayers,
                   gameType: gameType,

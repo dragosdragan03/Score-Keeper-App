@@ -14,7 +14,7 @@ class WhistGame extends StatefulWidget {
 }
 
 class _WhistGameState extends State<WhistGame> {
-  int numberOfPlayers = 3;
+  int numberOfPlayers = 0;
   bool introducedAllNames = true;
   bool isListVisible = false;
   List<TextEditingController> players = [];
@@ -38,15 +38,6 @@ class _WhistGameState extends State<WhistGame> {
 
     if (introducedAllNames) {
       final playerNames = players.map((controller) => controller.text).toList();
-      // Navigator.push(
-      //   context,
-      //   MaterialPageRoute(
-      //     builder: (context) => ChangeNotifierProvider.value(
-      //       value: gameProvider,
-      //       child: const BidPage(),
-      //     ),
-      //   ),
-      // );
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -127,6 +118,7 @@ class _WhistGameState extends State<WhistGame> {
                   updateControllers(selectedNumber);
                 });
               },
+              offNumber: 0,
             ),
             if (isListVisible)
               Padding(

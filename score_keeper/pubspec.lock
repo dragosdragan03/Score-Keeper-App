@@ -34,13 +34,21 @@ packages:
     source: hosted
     version: "1.1.1"
   collection:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: collection
       sha256: ee67cb0715911d28db6bf4af1026078bd6f0128b07a5f66fb2ed94ec6783c09a
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
+  confetti:
+    dependency: "direct main"
+    description:
+      name: confetti
+      sha256: "8690fb3f138ff42958d419ef7dd0f0bb192895bea3c921214cb5c3fa82e597b1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.6.0"
   crypto:
     dependency: transitive
     description:
@@ -86,6 +94,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
+  flutter_podium:
+    dependency: "direct main"
+    description:
+      name: flutter_podium
+      sha256: a6971e5f76f9b0eaf325836edb185d7c59cae9b8b6b3a1f03cfb79c8d268d207
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.4"
   flutter_test:
     dependency: "direct dev"
     description: flutter

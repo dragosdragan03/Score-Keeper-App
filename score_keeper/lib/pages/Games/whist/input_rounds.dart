@@ -27,12 +27,14 @@ class _InputRoundsState extends State<InputRounds> {
   @override
   void initState() {
     super.initState();
-    _selectedNumbers = List.generate(widget.numberOfPlayers, (index) => 1);
+    _selectedNumbers = List.generate(widget.numberOfPlayers, (index) => 0);
   }
 
-  void _onNumberSelected(int playerIndex, int number) {
+  void _onNumberSelected(
+      int playerIndex, int number, GameProviderWhist gameProvider) {
     setState(() {
       _selectedNumbers[playerIndex] = number;
+      gameProvider.setBids(_selectedNumbers);
     });
   }
 
@@ -65,7 +67,7 @@ class _InputRoundsState extends State<InputRounds> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "\tInput bid for ${widget.players[index].name}:",
+                          "\tInput bid for ${gameProvider.playersName[index]}:",
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
@@ -77,7 +79,12 @@ class _InputRoundsState extends State<InputRounds> {
                             step: 1,
                             selectedNumber: _selectedNumbers[index],
                             onNumberSelected: (number) =>
-                                _onNumberSelected(index, number),
+                                _onNumberSelected(index, number, gameProvider),
+                            offNumber: index ==
+                                    widget.numberOfPlayers -
+                                        1 // for the last player
+                                ? gameProvider.notAllowed()
+                                : -1,
                           ),
                         ),
                       ],

@@ -28,7 +28,7 @@ class _OutputState extends State<OutputRounds> {
   @override
   void initState() {
     super.initState();
-    _selectedNumbers = List.generate(widget.numberOfPlayers, (index) => 1);
+    _selectedNumbers = List.generate(widget.numberOfPlayers, (index) => 0);
   }
 
   void _onNumberSelected(int playerIndex, int number) {
@@ -37,10 +37,47 @@ class _OutputState extends State<OutputRounds> {
     });
   }
 
+  void showAlertDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text(
+          'Alert',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24.0,
+          ),
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 20.0),
+            Text(
+              "All players' bids are incorrect!",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _confirmAndGoBack(GameProviderWhist gameProvider) {
     setState(() {
       gameProvider.setResult(_selectedNumbers);
       Navigator.pop(context);
+      if (gameProvider.verifyBidsWrong()) {
+        showAlertDialog(context);
+      }
     });
   }
 
@@ -67,7 +104,7 @@ class _OutputState extends State<OutputRounds> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "\t${widget.players[index].name}'s results:",
+                          "\t${gameProvider.playersName[index]}'s results:",
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
@@ -80,6 +117,7 @@ class _OutputState extends State<OutputRounds> {
                             selectedNumber: _selectedNumbers[index],
                             onNumberSelected: (number) =>
                                 _onNumberSelected(index, number),
+                            offNumber: -1,
                           ),
                         ),
                       ],

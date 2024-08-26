@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:score_keeper/pages/Games/whist/whist_game.dart';
+import 'package:score_keeper/pages/Games/whist/award_page.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/optionsButton.dart';
 import 'package:score_keeper/pages/Games/whist/input_rounds.dart';
@@ -25,6 +25,7 @@ class ScoreBoard extends StatefulWidget {
 }
 
 class _ScoreBoardState extends State<ScoreBoard> {
+  int prevRoundNumber = 0;
   bool specialRounds = false; // if is on false this means it starts with 1
   bool isRoundOngoing = false;
   bool unlock = false; // used for player rotation
@@ -37,43 +38,47 @@ class _ScoreBoardState extends State<ScoreBoard> {
     numberOfRounds = 12 + 3 * widget.numberOfPlayers;
     specialRounds = widget
         .gameType; // if is on false this means it starts with 1 otherwise it start with 8
-    if (specialRounds) // this mean it start with 8
+    if (specialRounds) {
+      // this mean it start with 8
       roundNumber = 8;
-    else
+    } else {
       roundNumber = 1;
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text(
-            'Whist Game Information',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 24.0,
+    }
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text(
+              'Whist Game Information',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 24.0,
+              ),
             ),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 20.0),
-              Text(
-                necessaryCard(),
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 20.0),
+                Text(
+                  necessaryCard(),
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 18),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('Close'),
               ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Close'),
-            ),
-          ],
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 
   String necessaryCard() {
@@ -114,6 +119,12 @@ class _ScoreBoardState extends State<ScoreBoard> {
         stopMiddleRounds = 2 * widget.numberOfPlayers + 6,
         startLastRounds = 2 * widget.numberOfPlayers + 12; // final rounds 1/8
 
+    if (prevRoundNumber == gameProvider.roundNumber) {
+      // it's used this in case the prev round was mistken by all players
+      // (they all put the bids incorrect)
+      roundNumber--;
+    }
+
     if (!isRoundOngoing) {
       // if is no round ongoing (you have to enter the bids)
       if ((gameProvider.roundNumber <=
@@ -134,8 +145,9 @@ class _ScoreBoardState extends State<ScoreBoard> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const WhistGame(),
-          ),
+              builder: (context) => AwardPage(
+                    playersName: gameProvider.playersName,
+                  )),
         );
       }
 
@@ -144,9 +156,9 @@ class _ScoreBoardState extends State<ScoreBoard> {
       } else if (gameProvider.roundNumber == startLastRounds) {
         specialRounds = !specialRounds;
       }
-
+      gameProvider.updatePlayingRound(roundNumber);
       print("Input Round Type: $roundNumber\n\n");
-      print("RoundNumber: ${gameProvider.roundNumber}\n\n");
+      prevRoundNumber = gameProvider.roundNumber;
       gameProvider.incrementRoundNumber();
 
       Navigator.push(
@@ -162,12 +174,10 @@ class _ScoreBoardState extends State<ScoreBoard> {
           ),
         ),
       );
-
       setState(() {
         isRoundOngoing = true;
       });
     } else {
-      print("Ouput Round Type: $roundNumber\n\n");
       Navigator.push(
         context,
         MaterialPageRoute(
