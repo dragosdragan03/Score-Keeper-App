@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/bridge/bid_page.dart';
 import 'package:score_keeper/pages/Games/bridge/bridge_utils/team_score_display.dart';
 import 'package:score_keeper/pages/Games/bridge/bridge_utils/game_provider.dart';
+import 'package:score_keeper/pages/Games/bridge/winner_page.dart';
 
 class MainBridgePage extends StatefulWidget {
   const MainBridgePage({super.key});
@@ -19,6 +20,7 @@ class _MainBridgePageState extends State<MainBridgePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Bridge Game'),
+        automaticallyImplyLeading: false,
         actions: [
           IconButton(
               onPressed: () {
@@ -75,20 +77,38 @@ class _MainBridgePageState extends State<MainBridgePage> {
               ],
             ),
           ),
+          IconButton(
+            onPressed: () {
+              if (gameProvider.previousGameStates.isNotEmpty) {
+                gameProvider.undoGame();
+              }
+            },
+            icon: Icon(Icons.backspace),
+          )
         ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => ChangeNotifierProvider.value(
-                        value: gameProvider,
-                        child: const BidPage(),
-                      )));
-          gameProvider.setBidWinner(-1);
-          gameProvider.incrementGame();
+          if (gameProvider.rubberWinner == null) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => ChangeNotifierProvider.value(
+                          value: gameProvider,
+                          child: const BidPage(),
+                        )));
+            gameProvider.saveGameState();
+            gameProvider.setBidWinner(-1);
+            gameProvider.incrementGame();
+          } else {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => WinnerPage(
+                        player1: gameProvider.rubberWinner!.player1,
+                        player2: gameProvider.rubberWinner!.player2)));
+          }
         },
         child: const Icon(
           Icons.navigate_next_outlined,
