@@ -111,4 +111,35 @@ class GameProviderWhist extends ChangeNotifier {
     playersName = listPermutation(playersName);
     notifyListeners();
   }
+
+  void updatePlayerBetRounds(int indexPlayer, int bid, bool replace) {
+    players[indexPlayer].updateBetRounds(bid, replace);
+    notifyListeners();
+  }
+
+  void updatePlayerResultRounds(int indexPlayer, int result, bool replace) {
+    players[indexPlayer].updateResultRounds(result, replace);
+    notifyListeners();
+  }
+
+  void eraseLastRound() {
+    for (var player in players) {
+      player.eraseLastRound();
+    }
+    notifyListeners();
+  }
+
+  void eraseLastBet() {
+    for (var player in players) {
+      player.eraseLastBet();
+    }
+    notifyListeners();
+  }
+
+  void eraseLastResult() {
+    for (var player in players) {
+      player.eraseLastResult();
+    }
+    notifyListeners();
+  }
 }

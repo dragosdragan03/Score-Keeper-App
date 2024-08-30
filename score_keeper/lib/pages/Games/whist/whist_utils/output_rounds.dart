@@ -1,5 +1,6 @@
 // lib/input_rounds.dart
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
@@ -31,30 +32,32 @@ class _OutputState extends State<OutputRounds> {
     _selectedNumbers = List.generate(widget.numberOfPlayers, (index) => 0);
   }
 
-  void _onNumberSelected(int playerIndex, int number) {
+  void _onNumberSelected(
+      int playerIndex, int number, GameProviderWhist gameProvider) {
     setState(() {
+      gameProvider.updatePlayerResultRounds(playerIndex, number, true);
       _selectedNumbers[playerIndex] = number;
     });
   }
 
-  void showAlertDialog(BuildContext context) {
+  void showAlertDialog(BuildContext context, String title, String text) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text(
-          'Alert',
+        title: Text(
+          title,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24.0,
           ),
         ),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             SizedBox(height: 20.0),
             Text(
-              "All players' bids are incorrect!",
-              textAlign: TextAlign.center,
+              text,
+              textAlign: TextAlign.start,
               style: TextStyle(fontSize: 18),
             ),
           ],
@@ -76,7 +79,10 @@ class _OutputState extends State<OutputRounds> {
       gameProvider.setResult(_selectedNumbers);
       Navigator.pop(context);
       if (gameProvider.verifyBidsWrong()) {
-        showAlertDialog(context);
+        showAlertDialog(context, 'Alert', "All players' bids are incorrect!");
+      } else if (_selectedNumbers.sum > gameProvider.playingRound) {
+        showAlertDialog(context, 'Invalid Result!',
+            "Total results must equal the round hands.");
       }
     });
   }
@@ -116,7 +122,7 @@ class _OutputState extends State<OutputRounds> {
                             step: 1,
                             selectedNumber: _selectedNumbers[index],
                             onNumberSelected: (number) =>
-                                _onNumberSelected(index, number),
+                                _onNumberSelected(index, number, gameProvider),
                             offNumber: -1,
                           ),
                         ),

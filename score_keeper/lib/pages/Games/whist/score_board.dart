@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/whist/award_page.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/current_round.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/list_players.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/optionsButton.dart';
 import 'package:score_keeper/pages/Games/whist/input_rounds.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/output_rounds.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/score_column.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/vertical_pipes.dart';
 
 class ScoreBoard extends StatefulWidget {
   final bool gameType; // if the game is played 1..8..1 or 8..1..8
@@ -25,6 +29,12 @@ class ScoreBoard extends StatefulWidget {
 }
 
 class _ScoreBoardState extends State<ScoreBoard> {
+  final TextStyle commonTextStyle = const TextStyle(
+      fontSize: 18.0,
+      fontFamily: 'YourFontFamily', // Replace with your desired font family
+      fontWeight: FontWeight.normal,
+      decoration: TextDecoration.underline,
+      decorationThickness: 3.0);
   int prevRoundNumber = 0;
   bool specialRounds = false; // if is on false this means it starts with 1
   bool isRoundOngoing = false;
@@ -114,7 +124,7 @@ class _ScoreBoardState extends State<ScoreBoard> {
     return roundNumber;
   }
 
-  void handleRoundButtonPress(GameProviderWhist gameProvider) {
+  Future<void> handleRoundButtonPress(GameProviderWhist gameProvider) async {
     int startMiddleRounds = widget.numberOfPlayers + 6, // 8/1 rounds
         stopMiddleRounds = 2 * widget.numberOfPlayers + 6,
         startLastRounds = 2 * widget.numberOfPlayers + 12; // final rounds 1/8
@@ -160,8 +170,13 @@ class _ScoreBoardState extends State<ScoreBoard> {
       print("Input Round Type: $roundNumber\n\n");
       prevRoundNumber = gameProvider.roundNumber;
       gameProvider.incrementRoundNumber();
-
-      Navigator.push(
+      setState(() {
+        for (int i = 0; i < gameProvider.players.length; i++) {
+          gameProvider.updatePlayerBetRounds(i, 0, false);
+        }
+        isRoundOngoing = true;
+      });
+      await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => ChangeNotifierProvider.value(
@@ -174,11 +189,26 @@ class _ScoreBoardState extends State<ScoreBoard> {
           ),
         ),
       );
-      setState(() {
-        isRoundOngoing = true;
-      });
+      for (var player in gameProvider.players) {
+        print(player.name + ": ");
+        for (int i = 0; i < player.betRounds.length; i++)
+          print(player.betRounds[i]);
+      }
+      // print("Current round Number" + "${gameProvider.roundNumber}");
+      // print("Lungime betRound" + "${gameProvider.players[0].betRounds.length}");
+      // print("Lungime resultRound" +
+      //     "${gameProvider.players[0].resultRounds.length}");
+      print("Stop input rounds");
     } else {
-      Navigator.push(
+      print("Stop output rounds");
+      setState(() {
+        for (int i = 0; i < gameProvider.players.length; i++) {
+          gameProvider.updatePlayerResultRounds(i, 0, false);
+        }
+        isRoundOngoing = false;
+        unlock = true;
+      });
+      await Navigator.push(
         context,
         MaterialPageRoute(
           builder: (context) => ChangeNotifierProvider.value(
@@ -191,10 +221,15 @@ class _ScoreBoardState extends State<ScoreBoard> {
           ),
         ),
       );
-      setState(() {
-        isRoundOngoing = false;
-        unlock = true;
-      });
+      for (var player in gameProvider.players) {
+        print(player.name + ": ");
+        for (int i = 0; i < player.resultRounds.length; i++)
+          print(player.resultRounds[i]);
+      }
+      // print("Current round Number" + "${gameProvider.roundNumber}");
+      // print("Lungime betRound" + "${gameProvider.players[0].betRounds.length}");
+      // print("Lungime resultRound" +
+      //     "${gameProvider.players[0].resultRounds.length}");
     }
   }
 
@@ -207,34 +242,60 @@ class _ScoreBoardState extends State<ScoreBoard> {
         title: const Text('Score Board'),
         actions: const [OptionsButton()],
       ),
-      body: ListView.separated(
-        itemCount: widget.numberOfPlayers,
-        itemBuilder: (BuildContext context, int index) {
-          return ListTile(
-            tileColor: Colors.blueGrey[200],
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          double containerWidth = constraints.maxWidth / 5;
+          return Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Text(
-                  gameProvider.players[index].name,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  flex: 2,
+                  child: ListPlayers(
+                    playersName: gameProvider.playersName,
+                    width: containerWidth,
                   ),
                 ),
-                Text(
-                  'Score: ${gameProvider.players[index].score}',
-                  style: const TextStyle(
-                    fontSize: 16,
+                SizedBox(
+                  width: constraints.maxWidth *
+                      0.03, // Adjust spacing proportionally
+                ),
+                Expanded(
+                  flex: 1,
+                  child:
+                      VerticalPipes(numberOfLines: widget.numberOfPlayers + 1),
+                ),
+                SizedBox(
+                  width: constraints.maxWidth *
+                      0.05, // Adjust spacing proportionally
+                ),
+                Expanded(
+                  flex: 2,
+                  child: CurrentRound(),
+                ),
+                SizedBox(
+                  width: constraints.maxWidth *
+                      0.03, // Adjust spacing proportionally
+                ),
+                Expanded(
+                  flex: 1,
+                  child:
+                      VerticalPipes(numberOfLines: widget.numberOfPlayers + 1),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: ScoreColumn(
+                    scorePlayers: gameProvider.players
+                        .map((player) => player.score)
+                        .toList(),
+                    width: containerWidth,
                   ),
                 ),
               ],
             ),
           );
         },
-        separatorBuilder: (BuildContext context, int index) => const Divider(
-          color: Colors.white,
-        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => handleRoundButtonPress(gameProvider),

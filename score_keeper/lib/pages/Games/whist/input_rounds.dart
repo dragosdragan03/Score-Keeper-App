@@ -34,6 +34,7 @@ class _InputRoundsState extends State<InputRounds> {
       int playerIndex, int number, GameProviderWhist gameProvider) {
     setState(() {
       _selectedNumbers[playerIndex] = number;
+      gameProvider.updatePlayerBetRounds(playerIndex, number, true);
       gameProvider.setBids(_selectedNumbers);
     });
   }

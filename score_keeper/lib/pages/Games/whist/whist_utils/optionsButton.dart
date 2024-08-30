@@ -19,9 +19,9 @@ class _OptionsButtonState extends State<OptionsButton> {
             // child: Text("Settings"),
             child: Row(
               children: [
-                Icon(Icons.settings, color: Colors.black),
+                Icon(Icons.home, color: Colors.black),
                 SizedBox(width: 8), // Spacing between icon and text
-                Text("Settings", style: TextStyle(color: Colors.black)),
+                Text("Home Page", style: TextStyle(color: Colors.black)),
               ],
             ),
           ),
