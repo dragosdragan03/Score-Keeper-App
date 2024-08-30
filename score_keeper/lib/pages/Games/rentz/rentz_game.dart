@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:score_keeper/pages/Games/rentz/tab_bar.dart';
-import 'package:score_keeper/pages/Games/rentz/custom_listView.dart';
+import 'package:score_keeper/pages/Games/rentz/game_page.dart';
+import 'package:score_keeper/pages/Games/rentz/rentz_utils/tab_bar.dart';
+import 'package:score_keeper/pages/Games/rentz/rentz_utils/custom_listView.dart';
 
 class RentzGame extends StatefulWidget {
   const RentzGame({super.key});
@@ -10,7 +11,7 @@ class RentzGame extends StatefulWidget {
 }
 
 class _RentzGameState extends State<RentzGame> {
-  int numberOfPlayers = 4;
+  int numberOfPlayers = 3;
   bool introducedAllNames = true;
   bool isListVisible = false; // first time the list is hidden
   List<TextEditingController> players = [];
@@ -34,17 +35,17 @@ class _RentzGameState extends State<RentzGame> {
       }
     });
 
-    // if (introducedAllNames) {
-    //   Navigator.push(
-    //     context,
-    //     MaterialPageRoute(
-    //       builder: (context) => GamesDetails(
-    //         players: players.map((controller) => controller.text).toList(),
-    //         numberOfPlayers: numberOfPlayers,
-    //       ),
-    //     ),
-    //   );
-    // }
+    if (introducedAllNames) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => GamePage(
+            players: players.map((controller) => controller.text).toList(),
+            numberOfPlayers: numberOfPlayers,
+          ),
+        ),
+      );
+    }
   }
 
   void updateControllers(int newCount) {
@@ -111,7 +112,7 @@ class _RentzGameState extends State<RentzGame> {
 
           Container(
             child: CustomTabBar(
-                startIndex: 4,
+                startIndex: 3,
                 stopIndex: 6,
                 step: 1,
                 selectedNumber: numberOfPlayers,
