@@ -77,12 +77,6 @@ class _GamesDetailsState extends State<GamesDetails> {
                     setState(
                       () {
                         gameType = value;
-                        if (gameType) {
-                          // if is true this means it starts with 8
-                          gameProvider.updatePlayingRound(8);
-                        } else {
-                          gameProvider.updatePlayingRound(1);
-                        }
                       },
                     );
                   },
@@ -197,7 +191,6 @@ class _GamesDetailsState extends State<GamesDetails> {
                   ),
                 ],
               ),
-
             const SizedBox(height: 32.0),
             const Text(
               "Replay Round",
@@ -236,6 +229,12 @@ class _GamesDetailsState extends State<GamesDetails> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         onPressed: () {
+          if (gameType) {
+            // if is true this means it starts with 8
+            gameProvider.updatePlayingRound(8);
+          } else {
+            gameProvider.updatePlayingRound(1);
+          }
           Navigator.push(
             context,
             MaterialPageRoute(

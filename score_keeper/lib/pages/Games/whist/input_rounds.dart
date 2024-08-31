@@ -42,6 +42,7 @@ class _InputRoundsState extends State<InputRounds> {
   void confirmAndGoBack(GameProviderWhist gameProvider) {
     setState(() {
       gameProvider.setBids(_selectedNumbers);
+      gameProvider.changeRound();
       Navigator.pop(context);
     });
   }

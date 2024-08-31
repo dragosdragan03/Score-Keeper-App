@@ -80,10 +80,20 @@ class _OutputState extends State<OutputRounds> {
       Navigator.pop(context);
       if (gameProvider.verifyBidsWrong()) {
         showAlertDialog(context, 'Alert', "All players' bids are incorrect!");
+        gameProvider
+            .eraseLastRound(); // i delete the bids and the result (new hand, same rounds)
+        int roundNumber = gameProvider.playingRound;
+        gameProvider.updatePlayingRound(roundNumber - 1);
+        return;
       } else if (_selectedNumbers.sum > gameProvider.playingRound) {
         showAlertDialog(context, 'Invalid Result!',
             "Total results must equal the round hands.");
+        return;
       }
+      // increment the round number only when is time to go to the next round
+      gameProvider
+          .incrementRoundNumber(); // this means it's time to go to the next round
+      gameProvider.changeRound();
     });
   }
 

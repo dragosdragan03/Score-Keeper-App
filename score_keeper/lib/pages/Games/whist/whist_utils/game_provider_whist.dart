@@ -13,6 +13,7 @@ class GameProviderWhist extends ChangeNotifier {
   int streakBonusRounds = 5;
   int playingRound = 0;
   int roundNumber = 1;
+  bool inputTime = true;
 
   GameProviderWhist(List<Player> playersInput)
       : players = playersInput,
@@ -140,6 +141,11 @@ class GameProviderWhist extends ChangeNotifier {
     for (var player in players) {
       player.eraseLastResult();
     }
+    notifyListeners();
+  }
+
+  void changeRound() {
+    inputTime = !inputTime;
     notifyListeners();
   }
 }

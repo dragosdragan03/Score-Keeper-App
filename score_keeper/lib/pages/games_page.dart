@@ -28,30 +28,26 @@ class GamesPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildGameButton(
-                context,
-                icon: Icons.card_travel,
-                label: 'Rentz',
-                destination: const RentzGame(),
-              ),
-              _buildGameButton(
-                context,
-                icon: Icons.security,
-                label: 'Whist',
-                destination: const WhistGame(),
-              ),
-              _buildGameButton(
-                context,
-                icon: Icons.group,
-                label: 'Bridge',
-                destination: const TeamsPage(),
-              ),
-              _buildGameButton(
-                context,
-                icon: Icons.games,
-                label: 'Clasic Score',
-                destination: const OtherGames(),
-              ),
+              _buildGameButton(context,
+                  icon: Icons.card_travel,
+                  label: 'Rentz',
+                  destination: const RentzGame(),
+                  url: "/rentz"),
+              _buildGameButton(context,
+                  icon: Icons.security,
+                  label: 'Whist',
+                  destination: const WhistGame(),
+                  url: "/whist"),
+              _buildGameButton(context,
+                  icon: Icons.group,
+                  label: 'Bridge',
+                  destination: const TeamsPage(),
+                  url: "/bridge"),
+              _buildGameButton(context,
+                  icon: Icons.games,
+                  label: 'Classic Score',
+                  destination: const OtherGames(),
+                  url: "/classic_score"),
             ],
           ),
         ),
@@ -62,7 +58,8 @@ class GamesPage extends StatelessWidget {
   Widget _buildGameButton(BuildContext context,
       {required IconData icon,
       required String label,
-      required Widget destination}) {
+      required Widget destination,
+      required String url}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
       child: Card(
@@ -78,7 +75,10 @@ class GamesPage extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => destination),
+              MaterialPageRoute(
+                builder: (context) => destination,
+                settings: RouteSettings(name: url),
+              ),
             );
           },
         ),

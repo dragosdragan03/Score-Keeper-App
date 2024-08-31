@@ -65,11 +65,13 @@ class _CurrentRoundState extends State<CurrentRound> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (gameProvider.roundNumber > 0 &&
-                          gameProvider.roundNumber - 1 ==
-                              player.betRounds.length &&
+                          (gameProvider.roundNumber ==
+                                  player.betRounds.length ||
+                              gameProvider.roundNumber - 1 ==
+                                  player.betRounds.length) &&
                           player.betRounds.isNotEmpty)
                         Text(
-                          "${player.betRounds[gameProvider.roundNumber - 2]}",
+                          "${player.betRounds.last}",
                           style: const TextStyle(
                             fontSize: 19,
                           ),
@@ -95,9 +97,10 @@ class _CurrentRoundState extends State<CurrentRound> {
                       if (gameProvider.roundNumber > 0 &&
                           gameProvider.roundNumber - 1 ==
                               player.resultRounds.length &&
-                          player.resultRounds.isNotEmpty)
+                          player.resultRounds.isNotEmpty &&
+                          gameProvider.inputTime)
                         Text(
-                          "${player.resultRounds[gameProvider.roundNumber - 2]}",
+                          "${player.resultRounds.last}",
                           style: const TextStyle(
                             fontSize: 19,
                           ),

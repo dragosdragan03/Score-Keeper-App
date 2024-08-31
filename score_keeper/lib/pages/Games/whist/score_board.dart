@@ -35,12 +35,10 @@ class _ScoreBoardState extends State<ScoreBoard> {
       fontWeight: FontWeight.normal,
       decoration: TextDecoration.underline,
       decorationThickness: 3.0);
-  int prevRoundNumber = 0;
+  // int prevRoundNumber = 0;
   bool specialRounds = false; // if is on false this means it starts with 1
-  bool isRoundOngoing = false;
-  bool unlock = false; // used for player rotation
   int numberOfRounds = 0;
-  int roundNumber = 0;
+  // int roundNumber = 0;
 
   @override
   void initState() {
@@ -48,12 +46,12 @@ class _ScoreBoardState extends State<ScoreBoard> {
     numberOfRounds = 12 + 3 * widget.numberOfPlayers;
     specialRounds = widget
         .gameType; // if is on false this means it starts with 1 otherwise it start with 8
-    if (specialRounds) {
-      // this mean it start with 8
-      roundNumber = 8;
-    } else {
-      roundNumber = 1;
-    }
+    // if (specialRounds) {
+    //   // this mean it start with 8
+    //   roundNumber = 8;
+    // } else {
+    //   roundNumber = 1;
+    // }
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
         showDialog(
@@ -104,53 +102,88 @@ class _ScoreBoardState extends State<ScoreBoard> {
     }
   }
 
-  int firstLastRounds() {
-    if (!specialRounds) {
-      // if is on false it means it start with 1
-      return 1;
-    } else {
-      return 8;
-    }
-  }
+  // int firstLastRounds() {
+  //   if (!specialRounds) {
+  //     // if is on false it means it start with 1
+  //     return 1;
+  //   } else {
+  //     return 8;
+  //   }
+  // }
 
-  int middleGame() {
+  int middleGame(GameProviderWhist gameProvider) {
     if (!specialRounds) {
-      // it means is ascendent
-      roundNumber++;
-      return roundNumber;
+      int roundNumber = gameProvider.playingRound;
+      gameProvider.updatePlayingRound(roundNumber + 1);
+      return gameProvider.playingRound;
     }
     // it means is descendent
-    roundNumber--;
+    int roundNumber = gameProvider.playingRound;
+    gameProvider.updatePlayingRound(roundNumber - 1);
     return roundNumber;
+  }
+
+  void navigateToInput(GameProviderWhist gameProvider) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChangeNotifierProvider.value(
+          value: gameProvider,
+          child: InputRounds(
+            numberOfPlayers: widget.numberOfPlayers,
+            players: gameProvider.players,
+            roundType: gameProvider.playingRound,
+          ),
+        ),
+      ),
+    );
+  }
+
+  void navigateToOutput(GameProviderWhist gameProvider) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ChangeNotifierProvider.value(
+          value: gameProvider,
+          child: OutputRounds(
+            numberOfPlayers: widget.numberOfPlayers,
+            players: gameProvider.players,
+            roundType: gameProvider.playingRound,
+          ),
+        ),
+      ),
+    );
   }
 
   Future<void> handleRoundButtonPress(GameProviderWhist gameProvider) async {
     int startMiddleRounds = widget.numberOfPlayers + 6, // 8/1 rounds
         stopMiddleRounds = 2 * widget.numberOfPlayers + 6,
-        startLastRounds = 2 * widget.numberOfPlayers + 12; // final rounds 1/8
+        startLastRounds = 2 * widget.numberOfPlayers + 12;
+    // roundNumber; // final rounds 1/8
 
-    if (prevRoundNumber == gameProvider.roundNumber) {
-      // it's used this in case the prev round was mistken by all players
-      // (they all put the bids incorrect)
-      roundNumber--;
-    }
+    // if (prevRoundNumber == gameProvider.roundNumber) {
+    //   // it's used this in case the prev round was mistken by all players
+    //   // (they all put the bids incorrect)
+    //   roundNumber--;
+    // }
 
-    if (!isRoundOngoing) {
-      // if is no round ongoing (you have to enter the bids)
-      if ((gameProvider.roundNumber <=
-              widget.numberOfPlayers) || // this means are first rounds
-          (startMiddleRounds < gameProvider.roundNumber &&
-              gameProvider.roundNumber <=
-                  stopMiddleRounds) || // this means are the middle rounds
-          (startLastRounds < gameProvider.roundNumber &&
-              gameProvider.roundNumber < numberOfRounds)) {
-        // this mean are the last rounds
-        roundNumber = firstLastRounds();
-      } else if ((widget.numberOfPlayers < gameProvider.roundNumber &&
+    if (gameProvider.inputTime) {
+      // it means is time to input the bids
+      // if ((gameProvider.roundNumber <=
+      //         widget.numberOfPlayers) || // this means are first rounds
+      //     (startMiddleRounds < gameProvider.roundNumber &&
+      //         gameProvider.roundNumber <=
+      //             stopMiddleRounds) || // this means are the middle rounds
+      //     (startLastRounds < gameProvider.roundNumber &&
+      //         gameProvider.roundNumber < numberOfRounds)) {
+      //   // this mean are the last rounds
+      //   roundNumber = firstLastRounds();
+      // } else
+      if ((widget.numberOfPlayers < gameProvider.roundNumber &&
               gameProvider.roundNumber <= startMiddleRounds) ||
           (stopMiddleRounds < gameProvider.roundNumber &&
               gameProvider.roundNumber <= startLastRounds)) {
-        roundNumber = middleGame();
+        middleGame(gameProvider);
       } else if (gameProvider.roundNumber == numberOfRounds + 1) {
         Navigator.push(
           context,
@@ -166,70 +199,20 @@ class _ScoreBoardState extends State<ScoreBoard> {
       } else if (gameProvider.roundNumber == startLastRounds) {
         specialRounds = !specialRounds;
       }
-      gameProvider.updatePlayingRound(roundNumber);
-      print("Input Round Type: $roundNumber\n\n");
-      prevRoundNumber = gameProvider.roundNumber;
-      gameProvider.incrementRoundNumber();
+      // gameProvider.updatePlayingRound(roundNumber);
+      // print("Input Round Type: $roundNumber\n\n");
+
       setState(() {
         for (int i = 0; i < gameProvider.players.length; i++) {
           gameProvider.updatePlayerBetRounds(i, 0, false);
         }
-        isRoundOngoing = true;
       });
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ChangeNotifierProvider.value(
-            value: gameProvider,
-            child: InputRounds(
-              numberOfPlayers: widget.numberOfPlayers,
-              players: gameProvider.players,
-              roundType: roundNumber,
-            ),
-          ),
-        ),
-      );
-      for (var player in gameProvider.players) {
-        print(player.name + ": ");
-        for (int i = 0; i < player.betRounds.length; i++)
-          print(player.betRounds[i]);
-      }
-      // print("Current round Number" + "${gameProvider.roundNumber}");
-      // print("Lungime betRound" + "${gameProvider.players[0].betRounds.length}");
-      // print("Lungime resultRound" +
-      //     "${gameProvider.players[0].resultRounds.length}");
-      print("Stop input rounds");
+      navigateToInput(gameProvider);
     } else {
-      print("Stop output rounds");
-      setState(() {
-        for (int i = 0; i < gameProvider.players.length; i++) {
-          gameProvider.updatePlayerResultRounds(i, 0, false);
-        }
-        isRoundOngoing = false;
-        unlock = true;
-      });
-      await Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ChangeNotifierProvider.value(
-            value: gameProvider,
-            child: OutputRounds(
-              numberOfPlayers: widget.numberOfPlayers,
-              players: gameProvider.players,
-              roundType: roundNumber,
-            ),
-          ),
-        ),
-      );
-      for (var player in gameProvider.players) {
-        print(player.name + ": ");
-        for (int i = 0; i < player.resultRounds.length; i++)
-          print(player.resultRounds[i]);
+      for (int i = 0; i < gameProvider.players.length; i++) {
+        gameProvider.updatePlayerResultRounds(i, 0, false);
       }
-      // print("Current round Number" + "${gameProvider.roundNumber}");
-      // print("Lungime betRound" + "${gameProvider.players[0].betRounds.length}");
-      // print("Lungime resultRound" +
-      //     "${gameProvider.players[0].resultRounds.length}");
+      navigateToOutput(gameProvider);
     }
   }
 
@@ -257,19 +240,16 @@ class _ScoreBoardState extends State<ScoreBoard> {
                     width: containerWidth,
                   ),
                 ),
-                SizedBox(
-                  width: constraints.maxWidth *
-                      0.03, // Adjust spacing proportionally
-                ),
+                // SizedBox(width: 0 // Adjust spacing proportionally
+                //     ),
                 Expanded(
                   flex: 1,
                   child:
                       VerticalPipes(numberOfLines: widget.numberOfPlayers + 1),
                 ),
-                SizedBox(
-                  width: constraints.maxWidth *
-                      0.05, // Adjust spacing proportionally
-                ),
+                // SizedBox(
+                //   width: 1, // Adjust spacing proportionally
+                // ),
                 Expanded(
                   flex: 2,
                   child: CurrentRound(),

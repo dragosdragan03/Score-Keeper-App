@@ -10,55 +10,50 @@ class OptionsButton extends StatefulWidget {
 class _OptionsButtonState extends State<OptionsButton> {
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton(
+    return PopupMenuButton<int>(
+      icon: Icon(Icons.more_vert,
+          color: Colors.black), // Customize the icon color
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0), // Rounded corners
+      ),
       itemBuilder: (context) => [
-        const PopupMenuItem<int>(
-          value: 0,
-          child: ElevatedButton(
-            onPressed: null,
-            // child: Text("Settings"),
-            child: Row(
-              children: [
-                Icon(Icons.home, color: Colors.black),
-                SizedBox(width: 8), // Spacing between icon and text
-                Text("Home Page", style: TextStyle(color: Colors.black)),
-              ],
-            ),
-          ),
-        ),
-        const PopupMenuItem<int>(
-          value: 1,
-          child: ElevatedButton(
-            onPressed: null,
-            child: Row(
-              children: [
-                Icon(Icons.repeat_rounded, color: Colors.black),
-                SizedBox(width: 8), // Spacing between icon and text
-                Text(
-                  "New Game",
-                  style: TextStyle(color: Colors.black),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const PopupMenuItem<int>(
-          value: 1,
-          child: ElevatedButton(
-            onPressed: null,
-            child: Row(
-              children: [
-                Icon(Icons.cleaning_services_rounded, color: Colors.black),
-                SizedBox(width: 8), // Spacing between icon and text
-                Text(
-                  "Clear Last Round",
-                  style: TextStyle(color: Colors.black),
-                ),
-              ],
-            ),
-          ),
-        ),
+        _buildMenuItem(0, Icons.home, 'Home Page'),
+        _buildMenuItem(1, Icons.repeat_rounded, 'New Game'),
+        _buildMenuItem(2, Icons.history, 'History'),
+        _buildMenuItem(3, Icons.info_outline, 'Rules'),
+        _buildMenuItem(4, Icons.cleaning_services_rounded, 'Clear Last Round'),
       ],
+      onSelected: (value) {
+        switch (value) {
+          case 0:
+            Navigator.popUntil(context, (route) => route.settings.name == "/");
+          case 1:
+            Navigator.popUntil(
+                context, (route) => route.settings.name == "/whist");
+        }
+      },
+    );
+  }
+
+  PopupMenuItem<int> _buildMenuItem(int value, IconData icon, String text) {
+    return PopupMenuItem<int>(
+      value: value,
+      child: Row(
+        children: [
+          Icon(icon,
+              color: Color.fromARGB(188, 9, 133, 100)), // Customize icon color
+          const SizedBox(width: 10),
+          Text(
+            text,
+            style: const TextStyle(
+              color: Colors.black,
+              fontSize: 16.0, // Larger font size for better readability
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
