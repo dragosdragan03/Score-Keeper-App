@@ -107,7 +107,7 @@ class _GamesDetailsState extends State<GamesDetails> {
                     "Select whether a player get awarded for a win or loss streak across multiple rounds.",
                     style: TextStyle(
                       fontSize: 16.0,
-                      color: const Color.fromARGB(255, 97, 97, 97),
+                      color: Color.fromARGB(255, 97, 97, 97),
                     ),
                   ),
                 ),

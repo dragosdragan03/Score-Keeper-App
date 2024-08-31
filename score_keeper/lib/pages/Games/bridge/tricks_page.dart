@@ -15,7 +15,8 @@ class _TricksPageState extends State<TricksPage> {
   void onPressed(GameProvider gameProvider, int tricksWon) {
     setState(() {
       gameProvider.calculateScore();
-      Navigator.pop(context);
+      Navigator.popUntil(
+          context, (route) => route.settings.name == "/main-bridge-page");
     });
   }
 

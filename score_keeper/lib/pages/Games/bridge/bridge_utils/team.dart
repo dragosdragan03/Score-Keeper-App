@@ -24,22 +24,24 @@ class Team with ChangeNotifier {
     cloneTeam.gamesWon = gamesWon;
     cloneTeam.games = List<MaterialColor>.from(games);
     cloneTeam.elements = List<ScoreElement>.from(elements);
+    cloneTeam.vulnerable = vulnerable;
 
     return cloneTeam;
   }
 
-  void incrementScore(int value) {
+  void incrementScore(int value, String reason) {
     score += value;
     total += value;
-    addScoreElement(ScoreElement(scoreSource: "Bid", score: value));
+    addScoreElement(ScoreElement(scoreSource: "Bid: $reason", score: value));
     notifyListeners();
   }
 
-  void incrementBonus(int value) {
+  void incrementBonus(int value, String reason) {
     bonus += value;
     total += value;
     if (value > 0) {
-      addScoreElement(ScoreElement(scoreSource: "Bonus", score: value));
+      addScoreElement(
+          ScoreElement(scoreSource: "Bonus: $reason", score: value));
     }
     notifyListeners();
   }
@@ -49,6 +51,7 @@ class Team with ChangeNotifier {
     score = 0;
     bonus = 0;
     gamesWon++;
+    vulnerable = true;
     notifyListeners();
   }
 
@@ -56,6 +59,7 @@ class Team with ChangeNotifier {
     score = 0;
     bonus = 0;
     games[gameNumber] = Colors.red;
+    vulnerable = false;
     notifyListeners();
   }
 

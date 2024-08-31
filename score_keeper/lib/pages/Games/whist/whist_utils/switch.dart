@@ -44,10 +44,10 @@ class _SwitchButtonState extends State<SwitchButton> {
                   _isSwitched); // Notify parent widget about the toggle
             });
           },
-          activeColor: Color.fromARGB(255, 217, 197, 11),
+          activeColor: const Color.fromARGB(255, 217, 197, 11),
           inactiveThumbColor: const Color.fromARGB(255, 50, 164, 53),
           inactiveTrackColor: Colors.green.shade300,
-          activeTrackColor: Color.fromARGB(255, 251, 195, 105),
+          activeTrackColor: const Color.fromARGB(255, 251, 195, 105),
         ),
         Positioned(
           left: _isSwitched ? null : 7,

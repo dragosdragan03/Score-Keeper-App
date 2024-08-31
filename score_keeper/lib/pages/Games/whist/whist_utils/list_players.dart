@@ -37,6 +37,11 @@ class _ListPlayersState extends State<ListPlayers> {
                     bottom: 22.0), // Space around each name
                 child: Container(
                   width: widget.width,
+                  decoration: const BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                    color: Colors.grey,
+                  ))),
                   child: Text(
                     playerName,
                     style: const TextStyle(
@@ -44,15 +49,10 @@ class _ListPlayersState extends State<ListPlayers> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(
-                    color: Colors.grey,
-                  ))),
                 ),
               ),
             )
-            .toList(),
+            ,
       ],
     );
   }

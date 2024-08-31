@@ -38,6 +38,7 @@ class _TeamsPageState extends State<TeamsPage> {
                     GameProvider(names[0], names[1], names[2], names[3]),
                 child: const MainBridgePage(),
               ),
+              settings: const RouteSettings(name: "/main-bridge-page"),
             ));
         for (var controller in _controllers) {
           controller.clear();

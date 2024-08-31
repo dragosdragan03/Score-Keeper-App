@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
 
 class CurrentRound extends StatefulWidget {
-  CurrentRound({super.key});
+  const CurrentRound({super.key});
 
   @override
   State<CurrentRound> createState() => _CurrentRoundState();
@@ -79,7 +79,7 @@ class _CurrentRoundState extends State<CurrentRound> {
                       else
                         const Text(
                           "-",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 19,
                           ),
                         ),
@@ -108,7 +108,7 @@ class _CurrentRoundState extends State<CurrentRound> {
                       else
                         const Text(
                           "-",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 19,
                           ),
                         ),
@@ -117,7 +117,7 @@ class _CurrentRoundState extends State<CurrentRound> {
                 ),
               ),
             )
-            .toList(),
+            ,
       ],
     );
   }
