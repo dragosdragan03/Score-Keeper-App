@@ -21,6 +21,7 @@ class _BidPageState extends State<BidPage> {
   bool noBid = false;
   bool noColor = false;
   bool noWinner = false;
+  int multiplier = 0;
 
   void onPressed(GameProvider gameProvider) {
     setState(() {
@@ -29,12 +30,12 @@ class _BidPageState extends State<BidPage> {
       noWinner = gameProvider.bidWinner == -1;
 
       if (!noBid && !noColor && !noWinner) {
-        Navigator.pushReplacement(
+        Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => ChangeNotifierProvider.value(
                       value: gameProvider,
-                      child: TricksPage(),
+                      child: const TricksPage(),
                     )));
         gameProvider.chosenTrickIndex =
             _colorsKey.currentState!.getSelectedNumber();
@@ -131,7 +132,7 @@ class _BidPageState extends State<BidPage> {
               ),
               const SizedBox(height: 20),
               Container(
-                padding: const EdgeInsets.all(16.0),
+                // padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(10.0),
@@ -210,6 +211,101 @@ class _BidPageState extends State<BidPage> {
                   ],
                 ),
               ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 10.0,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment:
+                      MainAxisAlignment.center, // Center align the buttons
+                  children: [
+                    // Double Button
+                    ElevatedButton(
+                      onPressed: () {
+                        if (multiplier == 2) {
+                          gameProvider.multiplier = 1;
+                          setState(() {
+                            multiplier = 1;
+                          });
+                          return;
+                        }
+                        gameProvider.multiplier = 2;
+                        setState(() {
+                          multiplier = 2;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: multiplier == 2
+                            ? Colors.grey
+                            : Colors.black, // Background color
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12), // Padding inside the button
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(8), // Rounded corners
+                        ),
+                      ),
+                      child: Text(
+                        "Double",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: multiplier == 2 ? Colors.black : Colors.white,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16), // Spacing between the buttons
+                    // Redouble Button
+                    ElevatedButton(
+                      onPressed: () {
+                        if (multiplier == 4) {
+                          gameProvider.multiplier = 1;
+                          setState(() {
+                            multiplier = 1;
+                          });
+                          return;
+                        }
+                        gameProvider.multiplier = 4;
+                        setState(() {
+                          multiplier = 4;
+                        });
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: multiplier == 4
+                            ? Colors.grey
+                            : Colors.black, // Background color
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12), // Padding inside the button
+                        shape: RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(8), // Rounded corners
+                        ),
+                      ),
+                      child: Text(
+                        "Redouble",
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color:
+                                multiplier == 4 ? Colors.black : Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 70),
             ],
           ),
         ),
