@@ -11,9 +11,9 @@ class VerticalPipes extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Define local variables
-    final double lineThickness = 1.5;
-    final double lineHeight = 25.0;
-    final double spacing = 25.0;
+    const double lineThickness = 1.5;
+    const double lineHeight = 25.0;
+    const double spacing = 25.0;
 
     // Generate the list of vertical lines and return directly
     return Padding(
@@ -30,7 +30,7 @@ class VerticalPipes extends StatelessWidget {
                   height: lineHeight,
                   color: Colors.grey,
                 ),
-                SizedBox(height: spacing), // space below the line
+                const SizedBox(height: spacing), // space below the line
               ],
             );
           },

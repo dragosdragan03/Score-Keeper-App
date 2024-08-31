@@ -34,12 +34,13 @@ class GameProviderWhist extends ChangeNotifier {
 
   int notAllowed() {
     // this is the sum for all players except the last
-    int sum_bids = bids.sum - bids.last;
-    int offNumber = playingRound - sum_bids;
-    if (offNumber < 0)
+    int sumBids = bids.sum - bids.last;
+    int offNumber = playingRound - sumBids;
+    if (offNumber < 0) {
       return -1;
-    else
+    } else {
       return offNumber;
+    }
   }
 
   void setStreakBonusPoints(int streakBonusPoints) {

@@ -147,7 +147,7 @@ class _GamePageState extends State<GamePage> {
         ),
         backgroundColor: Colors.black.withOpacity(0.2),
         elevation: 0,
-        actions: [OptionsButton()],
+        actions: const [OptionsButton()],
         // actions: <Widget>[
         //   IconButton(
         //     icon: const Icon(Icons.rule_rounded, color: Colors.white, size: 28),
@@ -186,7 +186,7 @@ class _GamePageState extends State<GamePage> {
                 // Existing table wrapped in SingleChildScrollView
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  child: Container(
+                  child: SizedBox(
                     width:
                         1200, // Set a fixed width to ensure the table is wide
                     child: Table(
@@ -194,7 +194,7 @@ class _GamePageState extends State<GamePage> {
                           color: Colors.white, width: 2.0), // Thicker border
                       columnWidths: {
                         for (var i = 0; i < numberOfColumns; i++)
-                          i: FlexColumnWidth(),
+                          i: const FlexColumnWidth(),
                       },
                       children: [
                         // Header row with custom headers
@@ -265,6 +265,10 @@ class _GamePageState extends State<GamePage> {
   Widget _buildHeaderCell(String text) {
     return Container(
       padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.white, width: 1.0),
+        color: Colors.black.withOpacity(0.7),
+      ),
       child: Center(
         child: Text(
           text,
@@ -275,25 +279,21 @@ class _GamePageState extends State<GamePage> {
           ),
         ),
       ),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.white, width: 1.0),
-        color: Colors.black.withOpacity(0.7),
-      ),
     );
   }
 
   Widget _buildPlayerCell(String text) {
     return Container(
       padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.white, width: 1.0),
+        color: Colors.black.withOpacity(0.5),
+      ),
       child: Center(
         child: Text(
           text,
           style: const TextStyle(color: Colors.white),
         ),
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.white, width: 1.0),
-        color: Colors.black.withOpacity(0.5),
       ),
     );
   }
@@ -301,15 +301,15 @@ class _GamePageState extends State<GamePage> {
   Widget _buildEmptyCell() {
     return Container(
       padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.white, width: 1.0),
+        color: Colors.black.withOpacity(0.5),
+      ),
       child: const Center(
         child: Text(
           '',
           style: TextStyle(color: Colors.white),
         ),
-      ),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.white, width: 1.0),
-        color: Colors.black.withOpacity(0.5),
       ),
     );
   }

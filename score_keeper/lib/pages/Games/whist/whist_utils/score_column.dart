@@ -35,22 +35,22 @@ class _ScoreColumnState extends State<ScoreColumn> {
                     bottom: 22.0), // Space around each name
                 child: Container(
                   width: widget.width,
+                  decoration: const BoxDecoration(
+                      border: Border(
+                          bottom: BorderSide(
+                    color: Colors.grey,
+                  ))),
                   child: Text(
-                    "${scorePlayer}",
+                    "$scorePlayer",
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       fontSize: 19,
                     ),
                   ),
-                  decoration: BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(
-                    color: Colors.grey,
-                  ))),
                 ),
               ),
             )
-            .toList(),
+            ,
       ],
     );
   }

@@ -190,9 +190,10 @@ class _ScoreBoardState extends State<ScoreBoard> {
         ),
       );
       for (var player in gameProvider.players) {
-        print(player.name + ": ");
-        for (int i = 0; i < player.betRounds.length; i++)
+        print("${player.name}: ");
+        for (int i = 0; i < player.betRounds.length; i++) {
           print(player.betRounds[i]);
+        }
       }
       // print("Current round Number" + "${gameProvider.roundNumber}");
       // print("Lungime betRound" + "${gameProvider.players[0].betRounds.length}");
@@ -222,9 +223,10 @@ class _ScoreBoardState extends State<ScoreBoard> {
         ),
       );
       for (var player in gameProvider.players) {
-        print(player.name + ": ");
-        for (int i = 0; i < player.resultRounds.length; i++)
+        print("${player.name}: ");
+        for (int i = 0; i < player.resultRounds.length; i++) {
           print(player.resultRounds[i]);
+        }
       }
       // print("Current round Number" + "${gameProvider.roundNumber}");
       // print("Lungime betRound" + "${gameProvider.players[0].betRounds.length}");
@@ -270,7 +272,7 @@ class _ScoreBoardState extends State<ScoreBoard> {
                   width: constraints.maxWidth *
                       0.05, // Adjust spacing proportionally
                 ),
-                Expanded(
+                const Expanded(
                   flex: 2,
                   child: CurrentRound(),
                 ),

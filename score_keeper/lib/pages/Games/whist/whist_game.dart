@@ -70,7 +70,7 @@ class _WhistGameState extends State<WhistGame> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Whist Game'),
+        title: const Text('Whist Game'),
         actions: [
           IconButton(
               onPressed: () {
@@ -92,7 +92,7 @@ class _WhistGameState extends State<WhistGame> {
                   ),
                 );
               },
-              icon: Icon(Icons.question_mark))
+              icon: const Icon(Icons.question_mark))
         ],
       ),
       body: SingleChildScrollView(
@@ -133,9 +133,9 @@ class _WhistGameState extends State<WhistGame> {
               padding: const EdgeInsets.only(bottom: 20.0),
               child: AnimatedOpacity(
                 opacity: isListVisible && !introducedAllNames ? 1.0 : 0.0,
-                duration: Duration(seconds: 1),
+                duration: const Duration(seconds: 1),
                 child: Container(
-                  padding: EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
                     color: Colors.red,
                     borderRadius: BorderRadius.circular(8.0),

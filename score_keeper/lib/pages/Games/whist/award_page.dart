@@ -4,7 +4,7 @@ import 'package:flutter_podium/flutter_podium.dart';
 
 class AwardPage extends StatefulWidget {
   final List<String> playersName;
-  AwardPage({required this.playersName, super.key});
+  const AwardPage({required this.playersName, super.key});
 
   @override
   _AwardPageState createState() => _AwardPageState();
@@ -76,7 +76,7 @@ class _AwardPageState extends State<AwardPage> {
                 ),
                 if (remainingPlayers.isNotEmpty) ...[
                   const SizedBox(height: 20),
-                  Container(
+                  SizedBox(
                     height: 200, // Fixed height for the ListView
                     child: ListView.builder(
                       itemCount: remainingPlayers.length,
