@@ -23,11 +23,11 @@ class CustomTabBarState extends State<CustomTabBar> {
     return _selectedNumber;
   }
 
-  AnimatedContainer buildContainer(bool isSelected, int number) {
+  AnimatedContainer buildContainer(bool isSelected, int number, double width) {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       height: 40,
-      width: 40,
+      width: 40 < width ? 40 : width,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7),
         color: isSelected ? Colors.grey : widget.backgroundColor,
@@ -51,35 +51,41 @@ class CustomTabBarState extends State<CustomTabBar> {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Container(
-          height: 50,
-          padding: const EdgeInsets.symmetric(horizontal: 5),
-          decoration: BoxDecoration(
-            color: widget.backgroundColor,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: Colors.black),
-          ),
-          child: Row(
-            children: widget.children.expand((symbol) {
-              bool isSelected =
-                  widget.children.indexOf(symbol) == _selectedNumber;
-              return [
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _selectedNumber = widget.children.indexOf(symbol);
-                    });
-                  },
-                  child: buildContainer(
-                      isSelected, widget.children.indexOf(symbol)),
-                ),
-                if (symbol != widget.children.last) verticalPipeline()
-              ];
-            }).toList(),
-          ),
-        ),
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          double parentWidth = constraints.maxWidth;
+
+          return Container(
+            height: 50,
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            decoration: BoxDecoration(
+              color: widget.backgroundColor,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.black),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: widget.children.expand((symbol) {
+                bool isSelected =
+                    widget.children.indexOf(symbol) == _selectedNumber;
+                return [
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedNumber = widget.children.indexOf(symbol);
+                      });
+                    },
+                    child: buildContainer(
+                        isSelected,
+                        widget.children.indexOf(symbol),
+                        (parentWidth - 20) / widget.children.length),
+                  ),
+                  if (symbol != widget.children.last) verticalPipeline()
+                ];
+              }).toList(),
+            ),
+          );
+        },
       ),
     );
   }

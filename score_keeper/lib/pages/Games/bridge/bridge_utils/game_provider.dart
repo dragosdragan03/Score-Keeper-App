@@ -11,7 +11,11 @@ enum Score {
   grandSlamBonus,
   undertrick,
   fullRubberBonus,
-  halfRubberBonus
+  halfRubberBonus,
+  doubleOvertrick,
+  redoubleOvertrick,
+  smallSlamVulnerableBonus,
+  grandSlamVulerableBonus
 }
 
 extension ScoreValue on Score {
@@ -27,14 +31,22 @@ extension ScoreValue on Score {
         return 30;
       case Score.smallSlamBonus:
         return 500;
+      case Score.smallSlamVulnerableBonus:
+        return 750;
       case Score.grandSlamBonus:
         return 1000;
+      case Score.grandSlamVulerableBonus:
+        return 1500;
       case Score.undertrick:
         return 50;
       case Score.fullRubberBonus:
         return 700;
       case Score.halfRubberBonus:
         return 500;
+      case Score.doubleOvertrick:
+        return 100;
+      case Score.redoubleOvertrick:
+        return 200;
     }
   }
 }
@@ -50,6 +62,7 @@ class GameProvider extends ChangeNotifier {
   int gameNumber = 0;
   late Team bidWinningTeam;
   List<GameState> previousGameStates = [];
+  int multiplier = 1;
   Team? rubberWinner;
 
   GameProvider(String player1, String player2, String player3, String player4)
@@ -57,13 +70,13 @@ class GameProvider extends ChangeNotifier {
         teamB = Team(player1: player3, player2: player4, teamName: "B"),
         players = [player1, player2, player3, player4];
 
-  void incrementScore(Team team, int value) {
-    team.incrementScore(value);
+  void incrementScore(Team team, int value, String reason) {
+    team.incrementScore(value, reason);
     notifyListeners();
   }
 
-  void incrementBonus(Team team, int value) {
-    team.incrementBonus(value);
+  void incrementBonus(Team team, int value, String reason) {
+    team.incrementBonus(value, reason);
     notifyListeners();
   }
 
@@ -73,41 +86,99 @@ class GameProvider extends ChangeNotifier {
   }
 
   void calculateForWinner() {
+    // Small slam
     if (currentBid == 6) {
-      incrementBonus(bidWinningTeam, Score.smallSlamBonus.value);
+      int value = !bidWinningTeam.vulnerable
+          ? Score.smallSlamBonus.value
+          : Score.smallSlamVulnerableBonus.value;
+      String reason =
+          !bidWinningTeam.vulnerable ? "Small Slam" : "Vulnerable Small Slam";
+      incrementBonus(bidWinningTeam, value, reason);
     }
+
+    // Grand slam
     if (currentBid == 7) {
-      incrementBonus(bidWinningTeam, Score.grandSlamBonus.value);
+      int value = !bidWinningTeam.vulnerable
+          ? Score.grandSlamBonus.value
+          : Score.grandSlamVulerableBonus.value;
+      String reason =
+          !bidWinningTeam.vulnerable ? "Grand Slam" : "Vulnerable Grand Slam";
+      incrementBonus(bidWinningTeam, value, reason);
     }
+
+    if (multiplier == 2) {
+      int value = Score.doubleOvertrick.value *
+          (tricksWon - 6 - currentBid) *
+          (bidWinningTeam.vulnerable ? 2 : 1);
+      String reason = bidWinningTeam.vulnerable
+          ? "Vulnerable Double Overtrick"
+          : "Double Overtrick";
+
+      incrementBonus(bidWinningTeam, value, reason);
+    }
+
+    if (multiplier == 4) {
+      int value = Score.redoubleOvertrick.value *
+          (tricksWon - 6 - currentBid) *
+          (bidWinningTeam.vulnerable ? 2 : 1);
+      String reason = bidWinningTeam.vulnerable
+          ? "Vulnerable Redouble Overtrick"
+          : "Redouble Overtrick";
+
+      incrementBonus(bidWinningTeam, value, reason);
+    }
+
+    // Small trump
     if (chosenTrickIndex < 2) {
-      incrementScore(bidWinningTeam, Score.smallTrump.value * currentBid);
-      incrementBonus(bidWinningTeam,
-          Score.smallTrump.value * (tricksWon - 6 - currentBid));
+      incrementScore(bidWinningTeam,
+          multiplier * Score.smallTrump.value * currentBid, "Small trump");
+      if (multiplier == 1) {
+        incrementBonus(
+            bidWinningTeam,
+            Score.smallTrump.value * (tricksWon - 6 - currentBid),
+            "Small trump overtricks");
+      }
       return;
     }
+
+    // Big trump
     if (chosenTrickIndex >= 2 && chosenTrickIndex < 4) {
-      incrementScore(bidWinningTeam, Score.bigTrump.value * currentBid);
-      incrementBonus(
-          bidWinningTeam, Score.bigTrump.value * (tricksWon - 6 - currentBid));
+      incrementScore(bidWinningTeam,
+          multiplier * Score.bigTrump.value * currentBid, "Big trump");
+      if (multiplier == 1) {
+        incrementBonus(
+            bidWinningTeam,
+            Score.bigTrump.value * (tricksWon - 6 - currentBid),
+            "Big trump overtrick");
+      }
       return;
     }
+
+    // No trump
     if (chosenTrickIndex == 4) {
       incrementScore(
           bidWinningTeam,
-          Score.firstNoTrump.value +
-              Score.additionalNoTrump.value * (currentBid - 1));
-      incrementBonus(bidWinningTeam,
-          Score.additionalNoTrump.value * (tricksWon - 6 - currentBid));
+          multiplier *
+              (Score.firstNoTrump.value +
+                  Score.additionalNoTrump.value * (currentBid - 1)),
+          "No trump");
+      if (multiplier == 1) {
+        incrementBonus(
+            bidWinningTeam,
+            Score.additionalNoTrump.value * (tricksWon - 6 - currentBid),
+            "No trump overtrick");
+      }
       return;
     }
   }
 
   void finishRubber() {
-    incrementBonus(
-        bidWinningTeam,
-        otherTeam(bidWinningTeam).gamesWon == 0
-            ? Score.fullRubberBonus.value
-            : Score.halfRubberBonus.value);
+    int value = otherTeam(bidWinningTeam).gamesWon == 0
+        ? Score.fullRubberBonus.value
+        : Score.halfRubberBonus.value;
+    String reason =
+        otherTeam(bidWinningTeam).gamesWon == 0 ? "Full Rubber" : "Half Rubber";
+    incrementBonus(bidWinningTeam, value, reason);
     rubberWinner = bidWinningTeam;
   }
 
@@ -124,7 +195,7 @@ class GameProvider extends ChangeNotifier {
       }
     } else {
       incrementBonus(otherTeam(bidWinningTeam),
-          Score.undertrick.value * (currentBid + 6 - tricksWon));
+          Score.undertrick.value * (currentBid + 6 - tricksWon), "Undertrick");
     }
   }
 
