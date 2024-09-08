@@ -2,16 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/tab_bar.dart';
-import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart';
 
 class InputRounds extends StatefulWidget {
   final int numberOfPlayers;
-  final List<Player> players;
   final int roundType;
 
   const InputRounds({
     required this.numberOfPlayers,
-    required this.players,
     required this.roundType,
     super.key,
   });
@@ -21,26 +18,45 @@ class InputRounds extends StatefulWidget {
 }
 
 class _InputRoundsState extends State<InputRounds> {
-  List<int> _selectedNumbers = [];
+  // List<int> _selectedNumbers = [];
 
-  @override
-  void initState() {
-    super.initState();
-    _selectedNumbers = List.generate(widget.numberOfPlayers, (index) => 0);
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _selectedNumbers = List.generate(widget.numberOfPlayers, (index) => 0);
+  // }
 
   void _onNumberSelected(
       int playerIndex, int number, GameProviderWhist gameProvider) {
+    int lastIndex =
+        (widget.numberOfPlayers - 1 + gameProvider.roundNumber - 1) %
+            widget.numberOfPlayers;
     setState(() {
-      _selectedNumbers[playerIndex] = number;
+      // update the input/bid for the player who changed the number
       gameProvider.updatePlayerBetRounds(playerIndex, number, true);
-      gameProvider.setBids(_selectedNumbers);
+      int selectNr = gameProvider.players[lastIndex].betRounds.last;
+      int offNumber = gameProvider.notAllowed();
+
+      print("offNumber:");
+      print(offNumber);
+
+      if (selectNr == offNumber) {
+        // Check if the current cell is the notAllowed number
+        if (offNumber >= 0 && offNumber < gameProvider.playingRound) {
+          // If the notAllowed is less than the playing round, move to the right cell
+          selectNr += 1;
+        } else if (offNumber > 0 && offNumber <= gameProvider.playingRound) {
+          // Otherwise, move to the left cell
+          selectNr -= 1;
+        }
+      }
+      gameProvider.updatePlayerBetRounds(lastIndex, selectNr, true);
     });
   }
 
   void confirmAndGoBack(GameProviderWhist gameProvider) {
     setState(() {
-      gameProvider.setBids(_selectedNumbers);
+      print(gameProvider.players.map((player) => player.betRounds).toList());
       gameProvider.changeRound();
       Navigator.pop(context);
     });
@@ -52,6 +68,7 @@ class _InputRoundsState extends State<InputRounds> {
         Provider.of<GameProviderWhist>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Input Bids'),
       ),
       body: Padding(
@@ -62,13 +79,15 @@ class _InputRoundsState extends State<InputRounds> {
               child: ListView.builder(
                 itemCount: widget.numberOfPlayers,
                 itemBuilder: (context, index) {
+                  // Ensure the selected number for each player is updated in real time
+                  // int selectedNumber = switchCell(gameProvider, index);
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 0.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "\tInput bid for ${gameProvider.playersName[index]}:",
+                          "\tInput bid for ${gameProvider.players[(index + gameProvider.roundNumber - 1) % widget.numberOfPlayers].name}:",
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
@@ -78,9 +97,17 @@ class _InputRoundsState extends State<InputRounds> {
                             startIndex: 0,
                             stopIndex: widget.roundType,
                             step: 1,
-                            selectedNumber: _selectedNumbers[index],
-                            onNumberSelected: (number) =>
-                                _onNumberSelected(index, number, gameProvider),
+                            selectedNumber: gameProvider
+                                .players[
+                                    (index + gameProvider.roundNumber - 1) %
+                                        widget.numberOfPlayers]
+                                .betRounds
+                                .last,
+                            onNumberSelected: (number) => _onNumberSelected(
+                                (index + gameProvider.roundNumber - 1) %
+                                    widget.numberOfPlayers,
+                                number,
+                                gameProvider),
                             offNumber: index ==
                                     widget.numberOfPlayers -
                                         1 // for the last player
@@ -112,7 +139,7 @@ class _InputRoundsState extends State<InputRounds> {
                     vertical: 24,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(100),
                   ),
                 ),
                 child: const Text('Confirm'),

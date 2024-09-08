@@ -23,7 +23,26 @@ class CustomTabBar extends StatefulWidget {
 }
 
 class _CustomTabBarState extends State<CustomTabBar> {
-  late int _selectedNumber = widget.selectedNumber;
+  late int _selectedNumber;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedNumber = widget.selectedNumber;
+  }
+
+  @override
+  void didUpdateWidget(CustomTabBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // Check if the offNumber or selectedNumber has changed, then update the state
+    if (widget.offNumber != oldWidget.offNumber ||
+        widget.selectedNumber != oldWidget.selectedNumber) {
+      setState(() {
+        _selectedNumber = widget.selectedNumber;
+      });
+    }
+  }
 
   AnimatedContainer buildContainer(bool isSelected, int number, double width) {
     bool isOffNumber = number == widget.offNumber;
@@ -36,7 +55,7 @@ class _CustomTabBarState extends State<CustomTabBar> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(7),
         color: isOffNumber
-            ? Colors.transparent
+            ? Colors.transparent // Display grey for the offNumber
             : (isSelected ? Colors.grey : Colors.black),
       ),
       child: isOffNumber

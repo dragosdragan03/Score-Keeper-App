@@ -1,20 +1,14 @@
-// lib/input_rounds.dart
-
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
-import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/tab_bar.dart';
 
 class OutputRounds extends StatefulWidget {
   final int numberOfPlayers;
-  final List<Player> players;
-  final roundType;
+  final int roundType;
 
   const OutputRounds({
     required this.numberOfPlayers,
-    required this.players,
     required this.roundType,
     super.key,
   });
@@ -24,19 +18,10 @@ class OutputRounds extends StatefulWidget {
 }
 
 class _OutputState extends State<OutputRounds> {
-  List<int> _selectedNumbers = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedNumbers = List.generate(widget.numberOfPlayers, (index) => 0);
-  }
-
   void _onNumberSelected(
       int playerIndex, int number, GameProviderWhist gameProvider) {
     setState(() {
       gameProvider.updatePlayerResultRounds(playerIndex, number, true);
-      _selectedNumbers[playerIndex] = number;
     });
   }
 
@@ -46,7 +31,7 @@ class _OutputState extends State<OutputRounds> {
       builder: (context) => AlertDialog(
         title: Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24.0,
           ),
@@ -54,11 +39,11 @@ class _OutputState extends State<OutputRounds> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 20.0),
+            SizedBox(height: 20.0),
             Text(
               text,
               textAlign: TextAlign.start,
-              style: const TextStyle(fontSize: 18),
+              style: TextStyle(fontSize: 18),
             ),
           ],
         ),
@@ -75,25 +60,36 @@ class _OutputState extends State<OutputRounds> {
   }
 
   void _confirmAndGoBack(GameProviderWhist gameProvider) {
+    // print(_selectedNumbers);
+    // print(gameProvider.players.map((player) => player.resultRounds).toList());
+    // print(gameProvider.playingRound);
+    int sumResults = gameProvider.players
+        .map((player) => player.resultRounds.last)
+        .reduce((value, element) => value + element);
+
+    // print(sumResults);
+    bool isCorrect = gameProvider.verifyBidsWrong();
     setState(() {
-      gameProvider.setResult(_selectedNumbers);
-      Navigator.pop(context);
-      if (gameProvider.verifyBidsWrong()) {
+      if (isCorrect) {
+        // this means all players have to reply the round (bid + result)
+        gameProvider.eraseLastResultPlayer();
+        gameProvider.eraseLastBetPlayer();
+        gameProvider.changeRound();
+        Navigator.pop(context);
         showAlertDialog(context, 'Alert', "All players' bids are incorrect!");
-        gameProvider
-            .eraseLastRound(); // i delete the bids and the result (new hand, same rounds)
-        int roundNumber = gameProvider.playingRound;
-        gameProvider.updatePlayingRound(roundNumber - 1);
         return;
-      } else if (_selectedNumbers.sum > gameProvider.playingRound) {
+      } else if (sumResults != gameProvider.playingRound) {
         showAlertDialog(context, 'Invalid Result!',
             "Total results must equal the round hands.");
         return;
       }
       // increment the round number only when is time to go to the next round
-      gameProvider
-          .incrementRoundNumber(); // this means it's time to go to the next round
+      gameProvider.calculateScore();
+      gameProvider.incrementRoundNumber(
+          true); // this means it's time to go to the next round
+      // gameProvider.updatePlayingRound(gameProvider.playingRound, false);
       gameProvider.changeRound();
+      Navigator.pop(context);
     });
   }
 
@@ -104,6 +100,7 @@ class _OutputState extends State<OutputRounds> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Results'),
       ),
       body: Padding(
@@ -120,7 +117,7 @@ class _OutputState extends State<OutputRounds> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "\t${gameProvider.playersName[index]}'s results:",
+                          "\t${gameProvider.players[(index + gameProvider.roundNumber - 1) % widget.numberOfPlayers].name}'s results:",
                           style: const TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
@@ -130,9 +127,17 @@ class _OutputState extends State<OutputRounds> {
                             startIndex: 0,
                             stopIndex: widget.roundType,
                             step: 1,
-                            selectedNumber: _selectedNumbers[index],
-                            onNumberSelected: (number) =>
-                                _onNumberSelected(index, number, gameProvider),
+                            selectedNumber: gameProvider
+                                .players[
+                                    (index + gameProvider.roundNumber - 1) %
+                                        widget.numberOfPlayers]
+                                .resultRounds
+                                .last,
+                            onNumberSelected: (number) => _onNumberSelected(
+                                (index + gameProvider.roundNumber - 1) %
+                                    widget.numberOfPlayers,
+                                number,
+                                gameProvider),
                             offNumber: -1,
                           ),
                         ),
@@ -160,7 +165,7 @@ class _OutputState extends State<OutputRounds> {
                     vertical: 24,
                   ),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(100),
                   ),
                 ),
                 child: const Text('Confirm'),

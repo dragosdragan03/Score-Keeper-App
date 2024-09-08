@@ -5,8 +5,6 @@ import 'package:score_keeper/pages/Games/whist/score_board.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/switch.dart';
 
-bool gameType = false;
-
 class GamesDetails extends StatefulWidget {
   final int numberOfPlayers;
 
@@ -77,6 +75,7 @@ class _GamesDetailsState extends State<GamesDetails> {
                     setState(
                       () {
                         gameType = value;
+                        gameProvider.setGameType(gameType);
                       },
                     );
                   },
@@ -231,9 +230,9 @@ class _GamesDetailsState extends State<GamesDetails> {
         onPressed: () {
           if (gameType) {
             // if is true this means it starts with 8
-            gameProvider.updatePlayingRound(8);
+            gameProvider.setPlayingRound(8);
           } else {
-            gameProvider.updatePlayingRound(1);
+            gameProvider.setPlayingRound(1);
           }
           Navigator.push(
             context,
