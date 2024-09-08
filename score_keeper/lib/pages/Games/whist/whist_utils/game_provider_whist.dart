@@ -1,12 +1,10 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart';
 
 class GameProviderWhist extends ChangeNotifier {
   List<Player> players;
-  List<String> playersName;
-  List<int> results;
-  List<int> bids;
+  List<Player> originalListPlayer;
+  bool gameType = false;
   bool replayRound = true;
   bool streakBonus = true;
   int streakBonusPoints = 5;
@@ -17,31 +15,124 @@ class GameProviderWhist extends ChangeNotifier {
 
   GameProviderWhist(List<Player> playersInput)
       : players = playersInput,
-        playersName = List.generate(
-            playersInput.length, (index) => playersInput[index].name),
-        results = List.generate(playersInput.length, (index) => 0),
-        bids = List.generate(
-            playersInput.length, (index) => 0); // Correct initialization
-
-  List<String> listPermutation(List<String> list) {
-    if (list.isEmpty) return list;
-
-    // Rotate the list by moving the first element to the end
-    var firstElement = list.removeAt(0);
-    list.add(firstElement);
-
-    return list;
-  }
+        originalListPlayer = playersInput;
 
   int notAllowed() {
-    // this is the sum for all players except the last
-    int sumBids = bids.sum - bids.last;
-    int offNumber = playingRound - sumBids;
-    if (offNumber < 0) {
-      return -1;
-    } else {
-      return offNumber;
+    int numberOfPlayers = players.length;
+    int lastIndex = (numberOfPlayers - 1 + roundNumber - 1) % numberOfPlayers;
+    int sumBids = 0;
+
+    // Calculate the sum of all players' bets except the last player based on the current permutation
+    for (int i = 0; i < numberOfPlayers; i++) {
+      if (i != lastIndex) {
+        sumBids += players[i].betRounds.last;
+      }
     }
+
+    print("Playing round:");
+    print(roundNumber);
+    print("Sum of all bets except the last player:");
+    print(sumBids);
+
+    int offNumber = playingRound - sumBids;
+
+    return offNumber;
+  }
+
+  /// this method checks if all players bet wrongly
+  bool verifyBidsWrong() {
+    if (replayRound) {
+      for (var player in players) {
+        if (player.betRounds.last == player.resultRounds.last) {
+          return false;
+        }
+      }
+      return true; // it means all are different (REPLAY ROUND)
+    }
+    return false;
+  }
+
+  List<Player> sortPlayersByScore() {
+    // Create a new list, sort it in place, then return it
+    List<Player> sortedPlayers = players.toList();
+    sortedPlayers
+        .sort((player1, player2) => player2.score.compareTo(player1.score));
+
+    // Return the sorted list
+    return sortedPlayers;
+  }
+
+  void calculateScore() {
+    for (int i = 0; i < players.length; i++) {
+      players[i].calculateScore(
+          streakBonusPoints, streakBonus, playingRound, streakBonusRounds);
+    }
+    notifyListeners();
+  }
+
+  void updatePlayerBetRounds(int indexPlayer, int bid, bool replace) {
+    players[indexPlayer].updateBetRounds(bid, replace);
+    notifyListeners();
+  }
+
+  void updatePlayerResultRounds(int indexPlayer, int result, bool replace) {
+    players[indexPlayer].updateResultRounds(result, replace);
+    notifyListeners();
+  }
+
+  void middleGame() {
+    if (!gameType) {
+      playingRound += 1;
+      return;
+    }
+    // it means is descendent
+    playingRound -= 1;
+    return;
+  }
+
+  void updatePlayingRound() {
+    int numberOfPlayers = players.length;
+
+    if (!gameType) {
+      // Ascending sequence: 1..8...1
+      if (roundNumber <= numberOfPlayers) {
+        playingRound = 1; // First 3 rounds: 1 card per player.
+      } else if (roundNumber <= numberOfPlayers + 6) {
+        playingRound = roundNumber + 1 - numberOfPlayers; // Increasing phase.
+      } else if (roundNumber <= 2 * numberOfPlayers + 6) {
+        playingRound = 8; // Peak rounds.
+      } else if (roundNumber <= 2 * numberOfPlayers + 12) {
+        playingRound =
+            8 - (roundNumber - (2 * numberOfPlayers + 6)); // Decreasing phase.
+      } else {
+        playingRound = 1; // Last 3 rounds: 1 card per player.
+      }
+    } else {
+      // Descending sequence: 8...1...8
+      if (roundNumber <= numberOfPlayers) {
+        playingRound = 8; // First 3 rounds: Peak rounds.
+      } else if (roundNumber <= numberOfPlayers + 6) {
+        playingRound = 8 - (roundNumber - numberOfPlayers); // Decreasing phase.
+      } else if (roundNumber <= 2 * numberOfPlayers + 6) {
+        playingRound = 1; // Peak Rounds
+      } else if (roundNumber <= 2 * numberOfPlayers + 12) {
+        playingRound =
+            roundNumber - (2 * numberOfPlayers + 6); // Increasing phase.
+      } else {
+        playingRound = 8; // Last 3 rounds: 1 card per player.
+      }
+    }
+    notifyListeners();
+  }
+
+  void incrementRoundNumber() {
+    roundNumber++;
+    notifyListeners();
+  }
+
+  void changeRound() {
+    inputTime = !inputTime;
+    notifyListeners();
   }
 
   void setStreakBonusPoints(int streakBonusPoints) {
@@ -59,94 +150,13 @@ class GameProviderWhist extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setGameType(bool gameType) {
+    this.gameType = gameType;
+    notifyListeners();
+  }
+
   void setReplayRound(bool replayRound) {
     this.replayRound = replayRound;
-    notifyListeners();
-  }
-
-  void setBids(List<int> bidsInput) {
-    bids = bidsInput;
-    notifyListeners();
-  }
-
-  /// this method checks if all players bet wrongly
-  bool verifyBidsWrong() {
-    if (replayRound) {
-      for (int i = 0; i < bids.length; i++) {
-        if (bids[i] == results[i]) {
-          return false; // it means is at least one correct (NO REPLAY)
-        }
-      }
-
-      return true; // it means all are different (REPLAY ROUND)
-    }
-    return false;
-  }
-
-  void setResult(List<int> resultsInput) {
-    results = resultsInput;
-    if (verifyBidsWrong()) {
-      roundNumber--;
-      notifyListeners();
-      return;
-    }
-    _calculateScore();
-  }
-
-  void _calculateScore() {
-    for (int i = 0; i < players.length; i++) {
-      players[i].calculateScore(results[i], bids[i], streakBonusPoints,
-          streakBonus, playingRound, streakBonusRounds);
-    }
-    players.sort((player1, player2) => player2.score.compareTo(
-        player1.score)); // it's used to sprt the list based on the score
-    notifyListeners();
-  }
-
-  void updatePlayingRound(int playingRound) {
-    this.playingRound = playingRound;
-    notifyListeners();
-  }
-
-  void incrementRoundNumber() {
-    roundNumber++;
-    playersName = listPermutation(playersName);
-    notifyListeners();
-  }
-
-  void updatePlayerBetRounds(int indexPlayer, int bid, bool replace) {
-    players[indexPlayer].updateBetRounds(bid, replace);
-    notifyListeners();
-  }
-
-  void updatePlayerResultRounds(int indexPlayer, int result, bool replace) {
-    players[indexPlayer].updateResultRounds(result, replace);
-    notifyListeners();
-  }
-
-  void eraseLastRound() {
-    for (var player in players) {
-      player.eraseLastRound();
-    }
-    notifyListeners();
-  }
-
-  void eraseLastBet() {
-    for (var player in players) {
-      player.eraseLastBet();
-    }
-    notifyListeners();
-  }
-
-  void eraseLastResult() {
-    for (var player in players) {
-      player.eraseLastResult();
-    }
-    notifyListeners();
-  }
-
-  void changeRound() {
-    inputTime = !inputTime;
     notifyListeners();
   }
 }

@@ -14,16 +14,6 @@ class _CurrentRoundState extends State<CurrentRound> {
   Widget build(BuildContext context) {
     final gameProvider = Provider.of<GameProviderWhist>(context, listen: true);
 
-    // Print statements for debugging
-    print("Current round Number: ${gameProvider.roundNumber}");
-    if (gameProvider.players.isNotEmpty) {
-      print("Lungime betRound: ${gameProvider.players[0].betRounds.length}");
-      print(
-          "Lungime resultRound: ${gameProvider.players[0].resultRounds.length}");
-    } else {
-      print("No players found.");
-    }
-
     return Column(
       children: [
         const Text(
@@ -51,8 +41,7 @@ class _CurrentRoundState extends State<CurrentRound> {
             ),
           ],
         ),
-        ...gameProvider.players
-            .map(
+        ...gameProvider.sortPlayersByScore().map(
               (player) => Padding(
                 padding: const EdgeInsets.only(bottom: 20.0),
                 child: Container(
@@ -116,8 +105,7 @@ class _CurrentRoundState extends State<CurrentRound> {
                   ),
                 ),
               ),
-            )
-            ,
+            ),
       ],
     );
   }

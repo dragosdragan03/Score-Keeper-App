@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/whist/award_page.dart';
@@ -35,23 +36,13 @@ class _ScoreBoardState extends State<ScoreBoard> {
       fontWeight: FontWeight.normal,
       decoration: TextDecoration.underline,
       decorationThickness: 3.0);
-  // int prevRoundNumber = 0;
-  bool specialRounds = false; // if is on false this means it starts with 1
   int numberOfRounds = 0;
-  // int roundNumber = 0;
 
   @override
   void initState() {
     super.initState();
     numberOfRounds = 12 + 3 * widget.numberOfPlayers;
-    specialRounds = widget
-        .gameType; // if is on false this means it starts with 1 otherwise it start with 8
-    // if (specialRounds) {
-    //   // this mean it start with 8
-    //   roundNumber = 8;
-    // } else {
-    //   roundNumber = 1;
-    // }
+
     WidgetsBinding.instance.addPostFrameCallback(
       (_) {
         showDialog(
@@ -102,27 +93,6 @@ class _ScoreBoardState extends State<ScoreBoard> {
     }
   }
 
-  // int firstLastRounds() {
-  //   if (!specialRounds) {
-  //     // if is on false it means it start with 1
-  //     return 1;
-  //   } else {
-  //     return 8;
-  //   }
-  // }
-
-  int middleGame(GameProviderWhist gameProvider) {
-    if (!specialRounds) {
-      int roundNumber = gameProvider.playingRound;
-      gameProvider.updatePlayingRound(roundNumber + 1);
-      return gameProvider.playingRound;
-    }
-    // it means is descendent
-    int roundNumber = gameProvider.playingRound;
-    gameProvider.updatePlayingRound(roundNumber - 1);
-    return roundNumber;
-  }
-
   void navigateToInput(GameProviderWhist gameProvider) {
     Navigator.push(
       context,
@@ -131,7 +101,6 @@ class _ScoreBoardState extends State<ScoreBoard> {
           value: gameProvider,
           child: InputRounds(
             numberOfPlayers: widget.numberOfPlayers,
-            players: gameProvider.players,
             roundType: gameProvider.playingRound,
           ),
         ),
@@ -147,7 +116,6 @@ class _ScoreBoardState extends State<ScoreBoard> {
           value: gameProvider,
           child: OutputRounds(
             numberOfPlayers: widget.numberOfPlayers,
-            players: gameProvider.players,
             roundType: gameProvider.playingRound,
           ),
         ),
@@ -156,51 +124,25 @@ class _ScoreBoardState extends State<ScoreBoard> {
   }
 
   Future<void> handleRoundButtonPress(GameProviderWhist gameProvider) async {
-    int startMiddleRounds = widget.numberOfPlayers + 6, // 8/1 rounds
-        stopMiddleRounds = 2 * widget.numberOfPlayers + 6,
-        startLastRounds = 2 * widget.numberOfPlayers + 12;
-    // roundNumber; // final rounds 1/8
-
-    // if (prevRoundNumber == gameProvider.roundNumber) {
-    //   // it's used this in case the prev round was mistken by all players
-    //   // (they all put the bids incorrect)
-    //   roundNumber--;
-    // }
-
+    gameProvider.updatePlayingRound();
     if (gameProvider.inputTime) {
-      // it means is time to input the bids
-      // if ((gameProvider.roundNumber <=
-      //         widget.numberOfPlayers) || // this means are first rounds
-      //     (startMiddleRounds < gameProvider.roundNumber &&
-      //         gameProvider.roundNumber <=
-      //             stopMiddleRounds) || // this means are the middle rounds
-      //     (startLastRounds < gameProvider.roundNumber &&
-      //         gameProvider.roundNumber < numberOfRounds)) {
-      //   // this mean are the last rounds
-      //   roundNumber = firstLastRounds();
-      // } else
-      if ((widget.numberOfPlayers < gameProvider.roundNumber &&
-              gameProvider.roundNumber <= startMiddleRounds) ||
-          (stopMiddleRounds < gameProvider.roundNumber &&
-              gameProvider.roundNumber <= startLastRounds)) {
-        middleGame(gameProvider);
-      } else if (gameProvider.roundNumber == numberOfRounds + 1) {
+      if (gameProvider.roundNumber == numberOfRounds + 1) {
+        List<String> playersName = gameProvider.players
+            .toList()
+            .sorted(
+                (player1, player2) => player2.score.compareTo(player1.score))
+            .map((player) => player.name)
+            .toList();
+
         Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => AwardPage(
-                    playersName: gameProvider.playersName,
+                    playersName: playersName,
                   )),
         );
+        return;
       }
-
-      if (gameProvider.roundNumber == startMiddleRounds) {
-        specialRounds = !specialRounds;
-      } else if (gameProvider.roundNumber == startLastRounds) {
-        specialRounds = !specialRounds;
-      }
-      // gameProvider.updatePlayingRound(roundNumber);
-      // print("Input Round Type: $roundNumber\n\n");
 
       setState(() {
         for (int i = 0; i < gameProvider.players.length; i++) {
@@ -210,7 +152,8 @@ class _ScoreBoardState extends State<ScoreBoard> {
       navigateToInput(gameProvider);
     } else {
       for (int i = 0; i < gameProvider.players.length; i++) {
-        gameProvider.updatePlayerResultRounds(i, 0, false);
+        gameProvider.updatePlayerResultRounds(
+            i, gameProvider.players[i].betRounds.last, false);
       }
       navigateToOutput(gameProvider);
     }
@@ -239,7 +182,10 @@ class _ScoreBoardState extends State<ScoreBoard> {
                 Expanded(
                   flex: 2,
                   child: ListPlayers(
-                    playersName: gameProvider.playersName,
+                    playersName: gameProvider
+                        .sortPlayersByScore()
+                        .map((player) => player.name)
+                        .toList(),
                     width: containerWidth,
                   ),
                 ),
@@ -269,7 +215,8 @@ class _ScoreBoardState extends State<ScoreBoard> {
                 Expanded(
                   flex: 1,
                   child: ScoreColumn(
-                    scorePlayers: gameProvider.players
+                    scorePlayers: gameProvider
+                        .sortPlayersByScore()
                         .map((player) => player.score)
                         .toList(),
                     width: containerWidth,
