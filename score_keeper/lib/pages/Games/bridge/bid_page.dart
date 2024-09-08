@@ -147,84 +147,87 @@ class _BidPageState extends State<BidPage> {
 
                 // Bid and color selector
 
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Bid selector
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Bid selector
 
-                    const Text(
-                      "Bid",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    CustomTabBar(
-                      key: _bidKey,
-                      backgroundColor: Colors.black,
-                      pipeColor: Colors.white,
-                      children: List.generate(
-                        7,
-                        (int index) => Text(
-                          "${index + 1}",
-                          style: const TextStyle(color: Colors.white),
+                      const Text(
+                        "Bid",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
                         ),
                       ),
-                    ),
-                    Container(
-                      child: noBid
-                          ? const Text(
-                              "Please input a bid",
-                              style: TextStyle(color: Colors.red),
-                            )
-                          : null,
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Color selector
-
-                    const Text(
-                      "Color",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                      const SizedBox(height: 10),
+                      CustomTabBar(
+                        key: _bidKey,
+                        backgroundColor: Colors.black,
+                        pipeColor: Colors.white,
+                        children: List.generate(
+                          7,
+                          (int index) => Text(
+                            "${index + 1}",
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 10),
-                    CustomTabBar(
-                      key: _colorsKey,
-                      backgroundColor: Colors.white,
-                      pipeColor: Colors.black,
-                      children: constants.Constants.symbols,
-                    ),
-                    Container(
-                      child: noColor
-                          ? const Text(
-                              "Please input a color",
-                              style: TextStyle(color: Colors.red),
-                            )
-                          : null,
-                    ),
-                  ],
+                      Container(
+                        child: noBid
+                            ? const Text(
+                                "Please input a bid",
+                                style: TextStyle(color: Colors.red),
+                              )
+                            : null,
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Color selector
+
+                      const Text(
+                        "Color",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      CustomTabBar(
+                        key: _colorsKey,
+                        backgroundColor: Colors.white,
+                        pipeColor: Colors.black,
+                        children: constants.Constants.symbols,
+                      ),
+                      Container(
+                        child: noColor
+                            ? const Text(
+                                "Please input a color",
+                                style: TextStyle(color: Colors.red),
+                              )
+                            : null,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
               Container(
                 padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10.0),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10.0,
-                      offset: const Offset(0, 5),
-                    ),
-                  ],
-                ),
+                // decoration: BoxDecoration(
+                //   color: Colors.white,
+                //   borderRadius: BorderRadius.circular(10.0),
+                //   boxShadow: [
+                //     BoxShadow(
+                //       color: Colors.black.withOpacity(0.1),
+                //       blurRadius: 10.0,
+                //       offset: const Offset(0, 5),
+                //     ),
+                //   ],
+                // ),
                 child: Row(
                   mainAxisAlignment:
                       MainAxisAlignment.center, // Center align the buttons
