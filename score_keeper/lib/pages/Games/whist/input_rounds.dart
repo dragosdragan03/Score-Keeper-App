@@ -68,6 +68,7 @@ class _InputRoundsState extends State<InputRounds> {
         Provider.of<GameProviderWhist>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Input Bids'),
       ),
       body: Padding(

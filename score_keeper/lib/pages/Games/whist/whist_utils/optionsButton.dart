@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:score_keeper/pages/Games/bridge/bridge_utils/game_provider.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/table_score.dart';
-import 'package:score_keeper/pages/history_page.dart';
 
 class OptionsButton extends StatefulWidget {
   const OptionsButton({super.key});
@@ -13,10 +11,72 @@ class OptionsButton extends StatefulWidget {
 }
 
 class _OptionsButtonState extends State<OptionsButton> {
+  void showAlertDialog(BuildContext context, String title, String text) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 24.0,
+          ),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 20.0),
+            Text(
+              text,
+              textAlign: TextAlign.start,
+              style: TextStyle(fontSize: 18),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _eraseLastRound(GameProviderWhist gameProvider) {
+    // i have to handle 2 case
+
+    // if bids.length is bigger than results.length
+    if (gameProvider.players[0].betRounds.isNotEmpty &&
+        gameProvider.players[0].betRounds.length >
+            gameProvider.players[0].resultRounds.length) {
+      gameProvider.eraseLastBetPlayer();
+      showAlertDialog(context, "Last Round Cleared",
+          "The results of the last round have been successfully cleared. ");
+      gameProvider.changeRound();
+      return;
+    }
+    // if both have the same lenght i have to delete both last input
+    if (gameProvider.players[0].betRounds.isNotEmpty &&
+        gameProvider.players[0].betRounds.length ==
+            gameProvider.players[0].resultRounds.length) {
+      gameProvider.eraseLastResultPlayer();
+      gameProvider.eraseLastBetPlayer();
+      gameProvider.incrementRoundNumber(false);
+      showAlertDialog(context, "Last Round Cleared",
+          "The results of the last round have been successfully cleared. ");
+      return;
+    }
+    showAlertDialog(context, "No Rounds to Clear",
+        "There are no previous rounds to clear at this moment.");
+    return;
+  }
+
   @override
   Widget build(BuildContext context) {
-    GameProviderWhist gameProvider =
-        Provider.of<GameProviderWhist>(context);
+    GameProviderWhist gameProvider = Provider.of<GameProviderWhist>(context);
 
     return PopupMenuButton<int>(
       icon: Icon(Icons.more_vert,
@@ -40,20 +100,26 @@ class _OptionsButtonState extends State<OptionsButton> {
             Navigator.popUntil(
                 context, (route) => route.settings.name == "/whist");
           case 2:
-            showDialog(context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('History'),
-                  content: ChangeNotifierProvider.value(value: gameProvider,
-                      child: TableScore(),),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Close'),
-                    ),
-                  ],
-                ));
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('History'),
+                content: ChangeNotifierProvider.value(
+                  value: gameProvider,
+                  child: TableScore(),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Close'),
+                  ),
+                ],
+              ),
+            );
+          case 4:
+            _eraseLastRound(gameProvider);
         }
       },
     );

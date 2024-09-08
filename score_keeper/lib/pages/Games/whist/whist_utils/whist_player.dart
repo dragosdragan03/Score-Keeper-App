@@ -44,11 +44,6 @@ class Player {
     }
   }
 
-  void eraseLastRound() {
-    eraseLastBet();
-    eraseLastResult();
-  }
-
   void calculateScore(int streakBonusPoints, bool streakBonus, int playingRound,
       int streakBonusRounds) {
     score = 0;

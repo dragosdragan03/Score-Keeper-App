@@ -228,6 +228,12 @@ class _GamesDetailsState extends State<GamesDetails> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.black,
         onPressed: () {
+          if (gameType) {
+            // if is true this means it starts with 8
+            gameProvider.setPlayingRound(8);
+          } else {
+            gameProvider.setPlayingRound(1);
+          }
           Navigator.push(
             context,
             MaterialPageRoute(
