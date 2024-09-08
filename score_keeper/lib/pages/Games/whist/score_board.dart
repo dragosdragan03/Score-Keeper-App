@@ -165,11 +165,14 @@ class _ScoreBoardState extends State<ScoreBoard> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Score Board'),
-        actions: [ChangeNotifierProvider.value(
-          value: gameProvider,
-          child: OptionsButton(),
-        ),],
+        actions: [
+          ChangeNotifierProvider.value(
+            value: gameProvider,
+            child: OptionsButton(),
+          ),
+        ],
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {

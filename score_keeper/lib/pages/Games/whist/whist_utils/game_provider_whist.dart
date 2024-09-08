@@ -3,7 +3,6 @@ import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart';
 
 class GameProviderWhist extends ChangeNotifier {
   List<Player> players;
-  List<Player> originalListPlayer;
   bool gameType = false;
   bool replayRound = true;
   bool streakBonus = true;
@@ -13,9 +12,7 @@ class GameProviderWhist extends ChangeNotifier {
   int roundNumber = 1;
   bool inputTime = true;
 
-  GameProviderWhist(List<Player> playersInput)
-      : players = playersInput,
-        originalListPlayer = playersInput;
+  GameProviderWhist(List<Player> playersInput) : players = playersInput;
 
   int notAllowed() {
     int numberOfPlayers = players.length;
@@ -125,8 +122,30 @@ class GameProviderWhist extends ChangeNotifier {
     notifyListeners();
   }
 
-  void incrementRoundNumber() {
-    roundNumber++;
+  void eraseLastBetPlayer() {
+    for (var player in players) {
+      player.eraseLastBet();
+      player.calculateScore(
+          streakBonusPoints, streakBonus, playingRound, streakBonusRounds);
+    }
+    notifyListeners();
+  }
+
+  void eraseLastResultPlayer() {
+    for (var player in players) {
+      player.eraseLastResult();
+      player.calculateScore(
+          streakBonusPoints, streakBonus, playingRound, streakBonusRounds);
+    }
+    notifyListeners();
+  }
+
+  void incrementRoundNumber(bool increment) {
+    if (increment) {
+      roundNumber++;
+    } else {
+      roundNumber--;
+    }
     notifyListeners();
   }
 
@@ -157,6 +176,11 @@ class GameProviderWhist extends ChangeNotifier {
 
   void setReplayRound(bool replayRound) {
     this.replayRound = replayRound;
+    notifyListeners();
+  }
+
+  void setPlayingRound(int number) {
+    playingRound = number;
     notifyListeners();
   }
 }

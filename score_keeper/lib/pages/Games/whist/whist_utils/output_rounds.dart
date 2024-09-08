@@ -61,18 +61,22 @@ class _OutputState extends State<OutputRounds> {
 
   void _confirmAndGoBack(GameProviderWhist gameProvider) {
     // print(_selectedNumbers);
-    print(gameProvider.players.map((player) => player.resultRounds).toList());
-    print(gameProvider.playingRound);
+    // print(gameProvider.players.map((player) => player.resultRounds).toList());
+    // print(gameProvider.playingRound);
     int sumResults = gameProvider.players
         .map((player) => player.resultRounds.last)
         .reduce((value, element) => value + element);
 
-    print(sumResults);
+    // print(sumResults);
     bool isCorrect = gameProvider.verifyBidsWrong();
     setState(() {
       if (isCorrect) {
+        // this means all players have to reply the round (bid + result)
+        gameProvider.eraseLastResultPlayer();
+        gameProvider.eraseLastBetPlayer();
+        gameProvider.changeRound();
+        Navigator.pop(context);
         showAlertDialog(context, 'Alert', "All players' bids are incorrect!");
-
         return;
       } else if (sumResults != gameProvider.playingRound) {
         showAlertDialog(context, 'Invalid Result!',
@@ -81,8 +85,8 @@ class _OutputState extends State<OutputRounds> {
       }
       // increment the round number only when is time to go to the next round
       gameProvider.calculateScore();
-      gameProvider
-          .incrementRoundNumber(); // this means it's time to go to the next round
+      gameProvider.incrementRoundNumber(
+          true); // this means it's time to go to the next round
       // gameProvider.updatePlayingRound(gameProvider.playingRound, false);
       gameProvider.changeRound();
       Navigator.pop(context);
@@ -96,6 +100,7 @@ class _OutputState extends State<OutputRounds> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Results'),
       ),
       body: Padding(
