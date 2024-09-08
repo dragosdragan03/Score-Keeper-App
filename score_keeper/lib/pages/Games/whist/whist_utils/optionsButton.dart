@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:score_keeper/pages/Games/bridge/bridge_utils/game_provider.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
+import 'package:score_keeper/pages/Games/whist/whist_utils/table_score.dart';
+import 'package:score_keeper/pages/history_page.dart';
 
 class OptionsButton extends StatefulWidget {
   const OptionsButton({super.key});
@@ -10,6 +15,9 @@ class OptionsButton extends StatefulWidget {
 class _OptionsButtonState extends State<OptionsButton> {
   @override
   Widget build(BuildContext context) {
+    GameProviderWhist gameProvider =
+        Provider.of<GameProviderWhist>(context);
+
     return PopupMenuButton<int>(
       icon: Icon(Icons.more_vert,
           color: Colors.black), // Customize the icon color
@@ -31,6 +39,21 @@ class _OptionsButtonState extends State<OptionsButton> {
           case 1:
             Navigator.popUntil(
                 context, (route) => route.settings.name == "/whist");
+          case 2:
+            showDialog(context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('History'),
+                  content: ChangeNotifierProvider.value(value: gameProvider,
+                      child: TableScore(),),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ));
         }
       },
     );
