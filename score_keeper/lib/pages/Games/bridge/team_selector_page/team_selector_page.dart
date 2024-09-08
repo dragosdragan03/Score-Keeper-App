@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/bridge/bridge_utils/game_provider.dart';
-import 'package:score_keeper/pages/Games/bridge/main_page.dart';
-import 'package:score_keeper/pages/Games/bridge/bridge_utils/team_input.dart';
+import 'package:score_keeper/pages/Games/bridge/main_bridge_page.dart';
+import 'package:score_keeper/pages/Games/bridge/team_selector_page/utils/team_input.dart';
 
 class TeamsPage extends StatefulWidget {
   const TeamsPage({super.key});
@@ -76,31 +76,33 @@ class _TeamsPageState extends State<TeamsPage> {
               icon: const Icon(Icons.question_mark))
         ],
       ),
-      body: Padding(
-        padding:
-            const EdgeInsets.only(bottom: 80.0), // Add padding to avoid overlap
-        child: ListView(
-          padding: const EdgeInsets.all(16.0),
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: TeamInput(
-                key: _teamAKey,
-                teamName: "A",
-                controller1: _controllers[0],
-                controller2: _controllers[1],
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(
+              bottom: 10.0), // Add padding to avoid overlap
+          child: ListView(
+            padding: const EdgeInsets.all(16.0),
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: TeamInput(
+                  key: _teamAKey,
+                  teamName: "A",
+                  controller1: _controllers[0],
+                  controller2: _controllers[1],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: TeamInput(
-                key: _teamBKey,
-                teamName: "B",
-                controller1: _controllers[2],
-                controller2: _controllers[3],
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10.0),
+                child: TeamInput(
+                  key: _teamBKey,
+                  teamName: "B",
+                  controller1: _controllers[2],
+                  controller2: _controllers[3],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

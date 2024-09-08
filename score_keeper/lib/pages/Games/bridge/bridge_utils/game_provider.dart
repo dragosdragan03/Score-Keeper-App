@@ -9,13 +9,21 @@ enum Score {
   additionalNoTrump,
   smallSlamBonus,
   grandSlamBonus,
-  undertrick,
+  basicUndertrick,
+  firstDoubleUndertrick,
+  additionalDoubleUndertrick,
+  firstDoubleVulnerableUndertrick,
+  additionalDoubleVulnerableUndertrick,
+  firstRedoubleUndertrick,
+  additionalRedoubleUndertrick,
+  firstRedoubleVulnerableUndertrick,
+  additionalRedoubleVulnerableUndertrick,
   fullRubberBonus,
   halfRubberBonus,
   doubleOvertrick,
   redoubleOvertrick,
   smallSlamVulnerableBonus,
-  grandSlamVulerableBonus
+  grandSlamVulerableBonus,
 }
 
 extension ScoreValue on Score {
@@ -37,7 +45,7 @@ extension ScoreValue on Score {
         return 1000;
       case Score.grandSlamVulerableBonus:
         return 1500;
-      case Score.undertrick:
+      case Score.basicUndertrick:
         return 50;
       case Score.fullRubberBonus:
         return 700;
@@ -47,6 +55,22 @@ extension ScoreValue on Score {
         return 100;
       case Score.redoubleOvertrick:
         return 200;
+      case Score.firstDoubleUndertrick:
+        return 100;
+      case Score.additionalDoubleUndertrick:
+        return 200;
+      case Score.firstDoubleVulnerableUndertrick:
+        return 200;
+      case Score.additionalDoubleVulnerableUndertrick:
+        return 300;
+      case Score.firstRedoubleUndertrick:
+        return 200;
+      case Score.additionalRedoubleUndertrick:
+        return 400;
+      case Score.firstRedoubleVulnerableUndertrick:
+        return 400;
+      case Score.additionalRedoubleVulnerableUndertrick:
+        return 600;
     }
   }
 }
@@ -85,7 +109,7 @@ class GameProvider extends ChangeNotifier {
     return teamA;
   }
 
-  void calculateForWinner() {
+  void calculateForWin() {
     // Small slam
     if (currentBid == 6) {
       int value = !bidWinningTeam.vulnerable
@@ -172,6 +196,52 @@ class GameProvider extends ChangeNotifier {
     }
   }
 
+  void calculateForLose() {
+    Team bonusWinningTeam = otherTeam(bidWinningTeam);
+    int value = -1;
+    String reason = "Error";
+
+    // Not doubled
+    if (multiplier == 1) {
+      value = (currentBid + 6 - tricksWon) * Score.basicUndertrick.value;
+      if (bidWinningTeam.vulnerable) {
+        value *= 2;
+        reason = "Vulnerable Basic Undertrick";
+      } else {
+        reason = "Basic Undertrick";
+      }
+    }
+
+    if (multiplier == 2) {
+      if (bidWinningTeam.vulnerable) {
+        value = Score.firstDoubleVulnerableUndertrick.value +
+            Score.additionalDoubleVulnerableUndertrick.value *
+                (currentBid + 6 - tricksWon - 1);
+        reason = "Vulnerable Double Undertrick";
+      } else {
+        value = Score.firstDoubleUndertrick.value +
+            Score.additionalDoubleUndertrick.value *
+                (currentBid + 6 - tricksWon - 1);
+        reason = "Double Undertrick";
+      }
+    }
+
+    if (multiplier == 4) {
+      if (bidWinningTeam.vulnerable) {
+        value = Score.firstRedoubleVulnerableUndertrick.value +
+            Score.additionalRedoubleVulnerableUndertrick.value *
+                (currentBid + 6 - tricksWon - 1);
+        reason = "Vulnerable Redouble Undertrick";
+      } else {
+        value = Score.firstRedoubleUndertrick.value +
+            Score.additionalRedoubleUndertrick.value *
+                (currentBid + 6 - tricksWon - 1);
+        reason = "Redouble Undertrick";
+      }
+    }
+    incrementBonus(bonusWinningTeam, value, reason);
+  }
+
   void finishRubber() {
     int value = otherTeam(bidWinningTeam).gamesWon == 0
         ? Score.fullRubberBonus.value
@@ -179,12 +249,12 @@ class GameProvider extends ChangeNotifier {
     String reason =
         otherTeam(bidWinningTeam).gamesWon == 0 ? "Full Rubber" : "Half Rubber";
     incrementBonus(bidWinningTeam, value, reason);
-    rubberWinner = bidWinningTeam;
+    rubberWinner = teamA.total > teamB.total ? teamA : teamB;
   }
 
   void calculateScore() {
     if (tricksWon >= currentBid + 6) {
-      calculateForWinner();
+      calculateForWin();
       if (bidWinningTeam.score >= 100) {
         bidWinningTeam.winGame(gameNumber);
         otherTeam(bidWinningTeam).loseGame(gameNumber);
@@ -194,8 +264,7 @@ class GameProvider extends ChangeNotifier {
         }
       }
     } else {
-      incrementBonus(otherTeam(bidWinningTeam),
-          Score.undertrick.value * (currentBid + 6 - tricksWon), "Undertrick");
+      calculateForLose();
     }
   }
 
