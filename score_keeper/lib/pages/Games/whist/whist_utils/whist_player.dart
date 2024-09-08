@@ -49,30 +49,39 @@ class Player {
     eraseLastResult();
   }
 
-  void calculateScore(int result, int bid, int streakBonusPoints,
-      bool streakBonus, int playingRound, int streakBonusRounds) {
-    if (result == bid) {
-      score += result + 5;
-      if (playingRound != 1) {
-        roundsWon++;
-        roundsLost = 0;
-      }
-    } else {
-      score -= (result - bid).abs();
-      if (playingRound != 1) {
-        roundsLost++;
-        roundsWon = 0;
-      }
+  void calculateScore(int streakBonusPoints, bool streakBonus, int playingRound,
+      int streakBonusRounds) {
+    score = 0;
+    if (resultRounds.isEmpty) {
+      return;
     }
-    if (streakBonus && playingRound != 1) {
-      // daca este activat
-      if (roundsWon == streakBonusRounds) {
-        score += streakBonusPoints;
-        roundsWon = 0;
+    for (int i = 0; i < resultRounds.length; i++) {
+      // i traverse the results list because it will always smaller than the bids list
+      int result = resultRounds[i];
+      int bid = betRounds[i];
+      if (result == bid) {
+        score += result + 5;
+        if (playingRound != 1) {
+          roundsWon++;
+          roundsLost = 0;
+        }
+      } else {
+        score -= (result - bid).abs();
+        if (playingRound != 1) {
+          roundsLost++;
+          roundsWon = 0;
+        }
       }
-      if (roundsLost == streakBonusRounds) {
-        score -= streakBonusPoints;
-        roundsLost = 0;
+      if (streakBonus && playingRound != 1) {
+        // daca este activat
+        if (roundsWon == streakBonusRounds) {
+          score += streakBonusPoints;
+          roundsWon = 0;
+        }
+        if (roundsLost == streakBonusRounds) {
+          score -= streakBonusPoints;
+          roundsLost = 0;
+        }
       }
     }
   }

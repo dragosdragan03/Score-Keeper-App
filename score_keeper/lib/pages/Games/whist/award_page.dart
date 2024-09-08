@@ -94,6 +94,31 @@ class _AwardPageState extends State<AwardPage> {
                     ),
                   ),
                 ],
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.popUntil(
+                        context, (route) => route.settings.name == "/"),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.purple,
+                      foregroundColor: Colors.white,
+                      shadowColor: Colors.black,
+                      elevation: 5,
+                      textStyle: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 36,
+                        vertical: 24,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                    ),
+                    child: const Text('Finish Game'),
+                  ),
+                ),
               ],
             ),
           ),
