@@ -18,10 +18,10 @@ class TableScore extends StatefulWidget {
 class _TableScoreState extends State<TableScore> {
   @override
   Widget build(BuildContext context) {
-    GameProviderWhist gameProvider =
-        Provider.of<GameProviderWhist>(context);
+    GameProviderWhist gameProvider = Provider.of<GameProviderWhist>(context);
     int numberOfColumns = gameProvider.playingRound + 1;
     final int _currentNumberOfPlayers = gameProvider.players.length;
+
     return Scaffold(
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical, // Enable vertical scrolling
@@ -39,47 +39,49 @@ class _TableScoreState extends State<TableScore> {
             ),
             child: Column(
               children: [
-                // Existing table wrapped in SingleChildScrollView
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: SizedBox(
-                    width:
-                        100 + (gameProvider.roundNumber - 1) * 100, // 150 (Players column) + 100 * number of rounds
-                    child: Table(
-                      border: TableBorder.all(
-                        color: Colors.white, width: 2.0), // Thicker border
-                      columnWidths: {
-                        for (var i = 0; i < numberOfColumns; i++)
-                          if (i == 0)
-                            i: const FlexColumnWidth()
-                          else if (i == 1)
-                            i: const FixedColumnWidth(150)
-                          else
-                            i: const FixedColumnWidth(100),
-                      },
-                      children: [
-                      // Header row with custom headers
-                      TableRow(
-                        children: [
-                        _buildHeaderCell('Players'),
-                        for (var i = 1; i <= gameProvider.players[0].betRounds.length; i++)
-                          _buildHeaderCell('Round $i'),
-                        ],
+                // LayoutBuilder to adapt table width
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Calculate table width based on available space
+                    double pColumnWidth = 120;
+                    double tableWidth = pColumnWidth + (gameProvider.roundNumber - 1) * 75;
+
+                    return SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: SizedBox(
+                        width: tableWidth,
+                        child: Table(
+                          border: TableBorder.all(
+                              color: Colors.white, width: 2.0), // Thicker border
+                          columnWidths: {
+                              0: const FixedColumnWidth(120),
+                              for (var i = 1; i < numberOfColumns; i++)
+                                i: const FixedColumnWidth(75),
+                          },
+                          children: [
+                            // Header row with custom headers
+                            TableRow(
+                              children: [
+                                _buildHeaderCell('Players'),
+                                for (var i = 1; i <= gameProvider.players[0].betRounds.length; i++)
+                                  _buildHeaderCell('$i'),
+                              ],
+                            ),
+                            // Player rows
+                            ...List.generate(_currentNumberOfPlayers, (rowIndex) {
+                              return TableRow(
+                                children: [
+                                  _buildPlayerCell(gameProvider.players[rowIndex].name), // Player names column
+                                  for (var i = 0; i < gameProvider.players[0].betRounds.length; i++)
+                                    _buildEmptyCell(), // Empty round column
+                                ],
+                              );
+                            }),
+                          ],
+                        ),
                       ),
-                      // Player rows
-                      ...List.generate(_currentNumberOfPlayers, (rowIndex) {
-                        return TableRow(
-                        children: [
-                          _buildPlayerCell(gameProvider.players[
-                            rowIndex].name), // Player names column
-                          for (var i = 0; i < gameProvider.players[0].betRounds.length; i++)
-                          _buildEmptyCell(), // Empty round column
-                        ],
-                        );
-                      }),
-                      ],
-                    ),
-                  ),
+                    );
+                  },
                 ),
                 // Widget to show the current player's turn
                 Container(
