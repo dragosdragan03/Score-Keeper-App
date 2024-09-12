@@ -70,17 +70,17 @@ class _OutputState extends State<OutputRounds> {
     // print(sumResults);
     bool isCorrect = gameProvider.verifyBidsWrong();
     setState(() {
-      if (isCorrect) {
+      if (sumResults != gameProvider.playingRound) {
+        showAlertDialog(context, 'Invalid Result!',
+            "Total results must equal the round hands.");
+        return;
+      } else if (isCorrect) {
         // this means all players have to reply the round (bid + result)
         gameProvider.eraseLastResultPlayer();
         gameProvider.eraseLastBetPlayer();
         gameProvider.changeRound();
         Navigator.pop(context);
         showAlertDialog(context, 'Alert', "All players' bids are incorrect!");
-        return;
-      } else if (sumResults != gameProvider.playingRound) {
-        showAlertDialog(context, 'Invalid Result!',
-            "Total results must equal the round hands.");
         return;
       }
       // increment the round number only when is time to go to the next round
