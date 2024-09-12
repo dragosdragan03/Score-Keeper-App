@@ -208,4 +208,3 @@ class _TableScoreState extends State<TableScore> {
       ),
     );
   }
-}
