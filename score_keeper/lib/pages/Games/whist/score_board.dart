@@ -6,8 +6,8 @@ import 'package:score_keeper/pages/Games/whist/whist_utils/current_round.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/game_provider_whist.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/list_players.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/optionsButton.dart';
-import 'package:score_keeper/pages/Games/whist/input_rounds.dart';
-import 'package:score_keeper/pages/Games/whist/whist_utils/output_rounds.dart';
+import 'package:score_keeper/pages/Games/whist/input_bids.dart';
+import 'package:score_keeper/pages/Games/whist/input_results.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/score_column.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/vertical_pipes.dart';
 

@@ -19,95 +19,79 @@ class _TableScoreState extends State<TableScore> {
   @override
   Widget build(BuildContext context) {
     GameProviderWhist gameProvider = Provider.of<GameProviderWhist>(context);
-    int numberOfColumns = gameProvider.playingRound + 1;
+    int numberOfColumns = gameProvider.players[0].betRounds.length + 1;
     final int _currentNumberOfPlayers = gameProvider.players.length;
+    double firstColumnWidth = 120.0;
+    
 
-    return Scaffold(
-      body: SingleChildScrollView(
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: SingleChildScrollView(
         scrollDirection: Axis.vertical, // Enable vertical scrolling
-        child: Container(
-          height: MediaQuery.of(context).size.height, // Full screen height
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/rentz_assets/photo.jpeg'),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0).copyWith(
-              top: 115.0, // Adjust as needed
-            ),
-            child: Column(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // First column (stationary "Players" column)
+            Column(
               children: [
-                // LayoutBuilder to adapt table width
-                LayoutBuilder(
-                  builder: (context, constraints) {
-                    // Calculate table width based on available space
-                    double pColumnWidth = 120;
-                    double tableWidth = pColumnWidth + (gameProvider.roundNumber - 1) * 75;
-
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: SizedBox(
-                        width: tableWidth,
-                        child: Table(
-                          border: TableBorder.all(
-                              color: Colors.white, width: 2.0), // Thicker border
-                          columnWidths: {
-                              0: const FixedColumnWidth(120),
-                              for (var i = 1; i < numberOfColumns; i++)
-                                i: const FixedColumnWidth(75),
-                          },
-                          children: [
-                            // Header row with custom headers
-                            TableRow(
-                              children: [
-                                _buildHeaderCell('Players'),
-                                for (var i = 1; i <= gameProvider.players[0].betRounds.length; i++)
-                                  _buildHeaderCell('$i'),
-                              ],
-                            ),
-                            // Player rows
-                            ...List.generate(_currentNumberOfPlayers, (rowIndex) {
-                              return TableRow(
-                                children: [
-                                  _buildPlayerCell(gameProvider.players[rowIndex].name), // Player names column
-                                  for (var i = 0; i < gameProvider.players[0].betRounds.length; i++)
-                                    _buildEmptyCell(), // Empty round column
-                                ],
-                              );
-                            }),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                // Widget to show the current player's turn
-                Container(
-                  margin: const EdgeInsets.only(
-                      top: 16.0), // Margin to lower the widget
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 24.0, vertical: 12.0),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(30), // Oval shape
+                Padding(
+                  padding: const EdgeInsets.only(top: 50.0),
+                  child: Column(
+                    children: [
+                      _buildHeaderCell('Players', firstColumnWidth),
+                      ...List.generate(_currentNumberOfPlayers, (rowIndex) {
+                        return _buildPlayerCell(gameProvider.players[rowIndex].name, firstColumnWidth); // Player names column
+                      }),
+                    ],
                   ),
                 ),
               ],
             ),
-          ),
+            // Scrollable part (rounds columns)
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal, // Enable horizontal scrolling
+                padding: const EdgeInsets.only(top: 50.0),
+                child: Column(
+                  children: [
+                    // Header row with custom headers for rounds
+                    Row(
+                      children: [
+                        for (var i = numberOfColumns - 1; i >= 1; i--)
+                          _buildHeaderCell(
+                            gameProvider.rnToPrDotIndex(i) % 1 == 0
+                                ? gameProvider.rnToPrDotIndex(i).toInt().toString() // Display as integer if no fractional part
+                                : gameProvider.rnToPrDotIndex(i).toString() // Display full double if fractional part exists
+                          , 75),
+                      ],
+                    ),
+                    // Player rows for rounds
+                    ...List.generate(_currentNumberOfPlayers, (rowIndex) {
+                      return Row(
+                        children: [
+                          for (int i = numberOfColumns - 1; i >= 1; i--)
+                            _buildEmptyCell(rowIndex, i), // Empty round column
+                        ],
+                      );
+                    }),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
-  Widget _buildHeaderCell(String text) {
+  Widget _buildHeaderCell(String text, double width) {
     return Container(
-      padding: const EdgeInsets.all(8.0),
-      width: 100,
+      // padding: const EdgeInsets.all(16.0),
+      width: width,
+      height: 50,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.white, width: 1.0),
-        color: Colors.black.withOpacity(0.7),
+        color: Colors.black.withOpacity(0.8),
       ),
       child: Center(
         child: Text(
@@ -122,37 +106,105 @@ class _TableScoreState extends State<TableScore> {
     );
   }
 
-  Widget _buildPlayerCell(String text) {
+  Widget _buildPlayerCell(String text, double width) {
     return Container(
-      padding: const EdgeInsets.all(8.0),
-      width: 100,
+      // padding: const EdgeInsets.all(16.0),
+      width: width,
+      height: 60,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.white, width: 1.0),
-        color: Colors.black.withOpacity(0.5),
+        color: Colors.black.withOpacity(0.4),
       ),
       child: Center(
         child: Text(
           text,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.black),
         ),
       ),
     );
   }
 
-  Widget _buildEmptyCell() {
+  Widget _buildEmptyCell(int playerIndex, int roundIndex) {
+    print("playerIndex: $playerIndex, roundIndex: $roundIndex");
+    const int UNKNOWN_RESULT = -1;
+    const int UNKNOWN_SCORE = -999999;
+    int intBid, intResult, intScore;
+    GameProviderWhist gameProvider = Provider.of<GameProviderWhist>(context);
+    Player currPlayer = gameProvider.players[playerIndex];
+    intBid = currPlayer.betRounds[roundIndex - 1];
+    if (currPlayer.betRounds.length == currPlayer.resultRounds.length) {
+      intResult = currPlayer.resultRounds[roundIndex - 1];
+      intScore = currPlayer.scoreRounds[roundIndex - 1];
+    } else {
+      if (roundIndex == currPlayer.betRounds.length) {
+        intResult = UNKNOWN_RESULT;
+        intScore = UNKNOWN_SCORE;
+      } else {
+        intResult = currPlayer.resultRounds[roundIndex - 1];
+        intScore = currPlayer.scoreRounds[roundIndex - 1];
+      }
+    }
+    
+    
+    String bid = intBid.toString();
+    String result = intResult == UNKNOWN_RESULT ? "?" : intResult.toString();
+    String score = intScore == UNKNOWN_SCORE ? "?" : intScore.toString();
+    bool incorrectBid;
+    if (intResult == UNKNOWN_RESULT) {
+      incorrectBid = false;
+    } else {
+      incorrectBid = intBid == intResult ? false : true;
+    }
     return Container(
-      padding: const EdgeInsets.all(8.0),
-      width: 100,
+      // padding: const EdgeInsets.all(16.0),
+      width: 75,
+      height: 60,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.white, width: 1.0),
-        color: Colors.black.withOpacity(0.5),
+        color: Colors.black.withOpacity(0.3),
       ),
-      child: const Center(
-        child: Text(
-          '',
-          style: TextStyle(color: Colors.white),
+      child: Center(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              flex: 2,
+              child: Text(
+                score,
+                style: TextStyle(color: Colors.black),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Column(
+                children: [
+                    Expanded(
+                    flex: 1,
+                    child: Text(
+                      bid,
+                      style: TextStyle(
+                      color: Colors.black,
+                      // decoration: incorrectBid ? TextDecoration.lineThrough : TextDecoration.none,                      
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Text(
+                      result,
+                      style: TextStyle(
+                        color: incorrectBid ? const Color.fromARGB(255, 168, 0, 0) : Colors.black,
+                        ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
         ),
       ),
     );
   }
-}

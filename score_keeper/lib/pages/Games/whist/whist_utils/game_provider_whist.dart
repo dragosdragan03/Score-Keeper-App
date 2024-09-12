@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart';
 
@@ -6,6 +7,8 @@ class GameProviderWhist extends ChangeNotifier {
   bool gameType = false;
   bool replayRound = true;
   bool streakBonus = true;
+  bool lastSum = false;
+  bool gameStarted = false;
   int streakBonusPoints = 5;
   int streakBonusRounds = 5;
   int playingRound = 0;
@@ -61,8 +64,7 @@ class GameProviderWhist extends ChangeNotifier {
 
   void calculateScore() {
     for (int i = 0; i < players.length; i++) {
-      players[i].calculateScore(
-          streakBonusPoints, streakBonus, playingRound, streakBonusRounds);
+      players[i].calculateScore(this);
     }
     notifyListeners();
   }
@@ -122,11 +124,58 @@ class GameProviderWhist extends ChangeNotifier {
     notifyListeners();
   }
 
+  double rnToPrDotIndex(int currRoundNumber) {
+    int numberOfPlayers = players.length;
+    int currPlayingRound;
+    int index;
+
+    if (!gameType) {
+      // Ascending sequence: 1..8...1
+      if (currRoundNumber <= numberOfPlayers) {
+        currPlayingRound = 1; // First 3 rounds: 1 card per player.
+        index = currRoundNumber;
+      } else if (currRoundNumber <= numberOfPlayers + 6) {
+        currPlayingRound = currRoundNumber + 1 - numberOfPlayers; // Increasing phase.
+        index = 0;
+      } else if (currRoundNumber <= 2 * numberOfPlayers + 6) {
+        currPlayingRound = 8; // Peak rounds.
+        index = currRoundNumber - (numberOfPlayers + 6);
+      } else if (currRoundNumber <= 2 * numberOfPlayers + 12) {
+        currPlayingRound =
+            8 - (currRoundNumber - (2 * numberOfPlayers + 6)); // Decreasing phase.
+        index = 0;
+      } else {
+        currPlayingRound = 1; // Last 3 rounds: 1 card per player.
+        index = currRoundNumber - (2 * numberOfPlayers + 12);
+      }
+    } else {
+      // Descending sequence: 8...1...8
+      if (currRoundNumber <= numberOfPlayers) {
+        currPlayingRound = 8; // First 3 rounds: Peak rounds.
+        index = currRoundNumber;
+      } else if (currRoundNumber <= numberOfPlayers + 6) {
+        currPlayingRound = 8 - (currRoundNumber - numberOfPlayers); // Decreasing phase.
+        index = 0;
+      } else if (currRoundNumber <= 2 * numberOfPlayers + 6) {
+        currPlayingRound = 1; // 1 card per player.
+        index = currRoundNumber - (numberOfPlayers + 6);
+      } else if (currRoundNumber <= 2 * numberOfPlayers + 12) {
+        currPlayingRound =
+            currRoundNumber - (2 * numberOfPlayers + 6); // Increasing phase.
+        index = 0;
+      } else {
+        currPlayingRound = 8; // Peak rounds.
+        index = currRoundNumber - (2 * numberOfPlayers + 12);
+      }
+    }
+    double result = currPlayingRound + index / 10;
+    return result;
+  }
+
   void eraseLastBetPlayer() {
     for (var player in players) {
       player.eraseLastBet();
-      player.calculateScore(
-          streakBonusPoints, streakBonus, playingRound, streakBonusRounds);
+      player.calculateScore(this);
     }
     notifyListeners();
   }
@@ -134,8 +183,7 @@ class GameProviderWhist extends ChangeNotifier {
   void eraseLastResultPlayer() {
     for (var player in players) {
       player.eraseLastResult();
-      player.calculateScore(
-          streakBonusPoints, streakBonus, playingRound, streakBonusRounds);
+      player.calculateScore(this);
     }
     notifyListeners();
   }
@@ -166,6 +214,14 @@ class GameProviderWhist extends ChangeNotifier {
 
   void setStreakBonus(bool streakBonus) {
     this.streakBonus = streakBonus;
+    if (!streakBonus) {
+      this.lastSum = false;
+    }
+    notifyListeners();
+  }
+
+  void setLastSum(bool lastSum) {
+    this.lastSum = lastSum;
     notifyListeners();
   }
 

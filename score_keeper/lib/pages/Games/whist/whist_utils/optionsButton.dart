@@ -102,20 +102,23 @@ class _OptionsButtonState extends State<OptionsButton> {
           case 2:
             showDialog(
               context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('History'),
-                content: ChangeNotifierProvider.value(
+              builder: (context) => Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),  // Rounded corners
+                // title: const Text('History'),
+                child: ChangeNotifierProvider.value(
                   value: gameProvider,
                   child: TableScore(),
                 ),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Close'),
-                  ),
-                ],
+                // actions: [
+                //   TextButton(
+                //     onPressed: () {
+                //       Navigator.pop(context);
+                //     },
+                //     child: const Text('Close'),
+                //   ),
+                // ],
               ),
             );
           case 4:
