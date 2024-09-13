@@ -170,7 +170,7 @@ class _ScoreBoardState extends State<ScoreBoard> {
         actions: [
           ChangeNotifierProvider.value(
             value: gameProvider,
-            child: OptionsButton(),
+            child: const OptionsButton(),
           ),
         ],
       ),
@@ -202,7 +202,7 @@ class _ScoreBoardState extends State<ScoreBoard> {
                 // SizedBox(
                 //   width: 1, // Adjust spacing proportionally
                 // ),
-                Expanded(
+                const Expanded(
                   flex: 2,
                   child: CurrentRound(),
                 ),

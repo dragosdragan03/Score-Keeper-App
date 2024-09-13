@@ -17,7 +17,7 @@ class _OptionsButtonState extends State<OptionsButton> {
       builder: (context) => AlertDialog(
         title: Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24.0,
           ),
@@ -25,11 +25,11 @@ class _OptionsButtonState extends State<OptionsButton> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             Text(
               text,
               textAlign: TextAlign.start,
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
           ],
         ),
@@ -79,7 +79,7 @@ class _OptionsButtonState extends State<OptionsButton> {
     GameProviderWhist gameProvider = Provider.of<GameProviderWhist>(context);
 
     return PopupMenuButton<int>(
-      icon: Icon(Icons.more_vert,
+      icon: const Icon(Icons.more_vert,
           color: Colors.black), // Customize the icon color
       color: Colors.white,
       shape: RoundedRectangleBorder(
@@ -105,11 +105,11 @@ class _OptionsButtonState extends State<OptionsButton> {
               builder: (context) => Dialog(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
-                ),  // Rounded corners
+                ), // Rounded corners
                 // title: const Text('History'),
                 child: ChangeNotifierProvider.value(
                   value: gameProvider,
-                  child: TableScore(),
+                  child: const TableScore(),
                 ),
                 // actions: [
                 //   TextButton(
@@ -134,7 +134,8 @@ class _OptionsButtonState extends State<OptionsButton> {
       child: Row(
         children: [
           Icon(icon,
-              color: Color.fromARGB(188, 9, 133, 100)), // Customize icon color
+              color: const Color.fromARGB(
+                  188, 9, 133, 100)), // Customize icon color
           const SizedBox(width: 10),
           Text(
             text,
