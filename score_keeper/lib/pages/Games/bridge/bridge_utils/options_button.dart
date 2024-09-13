@@ -15,7 +15,7 @@ class _OptionsButtonState extends State<OptionsButton> {
     GameProvider gameProvider = Provider.of<GameProvider>(context);
 
     return PopupMenuButton<int>(
-      icon: Icon(Icons.more_vert,
+      icon: const Icon(Icons.more_vert,
           color: Colors.black), // Customize the icon color
       color: Colors.white,
       shape: RoundedRectangleBorder(
@@ -49,7 +49,8 @@ class _OptionsButtonState extends State<OptionsButton> {
       child: Row(
         children: [
           Icon(icon,
-              color: Color.fromARGB(188, 9, 133, 100)), // Customize icon color
+              color: const Color.fromARGB(
+                  188, 9, 133, 100)), // Customize icon color
           const SizedBox(width: 10),
           Text(
             text,

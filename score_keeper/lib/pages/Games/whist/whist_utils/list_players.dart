@@ -30,29 +30,27 @@ class _ListPlayersState extends State<ListPlayers> {
         const SizedBox(height: 22.0), // Space between header and names
 
         // Convert the list of player names to widgets
-        ...widget.playersName
-            .map(
-              (playerName) => Padding(
-                padding: const EdgeInsets.only(
-                    bottom: 22.0), // Space around each name
-                child: Container(
-                  width: widget.width,
-                  decoration: const BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(
-                    color: Colors.grey,
-                  ))),
-                  child: Text(
-                    playerName,
-                    style: const TextStyle(
-                      fontSize: 18,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
+        ...widget.playersName.map(
+          (playerName) => Padding(
+            padding:
+                const EdgeInsets.only(bottom: 22.0), // Space around each name
+            child: Container(
+              width: widget.width,
+              decoration: const BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(
+                color: Colors.grey,
+              ))),
+              child: Text(
+                playerName,
+                style: const TextStyle(
+                  fontSize: 18,
                 ),
+                textAlign: TextAlign.center,
               ),
-            )
-            ,
+            ),
+          ),
+        ),
       ],
     );
   }

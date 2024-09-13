@@ -31,7 +31,7 @@ class _OutputState extends State<OutputRounds> {
       builder: (context) => AlertDialog(
         title: Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 24.0,
           ),
@@ -39,11 +39,11 @@ class _OutputState extends State<OutputRounds> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             Text(
               text,
               textAlign: TextAlign.start,
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
           ],
         ),

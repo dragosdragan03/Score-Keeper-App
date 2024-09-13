@@ -41,60 +41,71 @@ class Player {
     }
   }
 
+// ??????????????????????????????????????
   void eraseLastResult() {
     if (resultRounds.isNotEmpty) {
       resultRounds.removeLast();
-      scoreRounds.removeLast();
     }
+    // if (scoreRounds.isNotEmpty) {
+    //   scoreRounds.removeLast();
+    // }
   }
 
-  void calculateScore(GameProviderWhist gameProvider) {
-    bool lastSum = gameProvider.lastSum;
-    int streakBonusRounds = gameProvider.streakBonusRounds;
-    int streakBonusPoints = gameProvider.streakBonusPoints;
-    bool streakBonus = gameProvider.streakBonus;
+  void calculateScore(
+      bool lastSum,
+      int streakBonusRounds,
+      int streakBonusPoints,
+      bool streakBonus,
+      int numberOfPlayers,
+      bool gameType) {
+    // bool lastSum = gameProvider.lastSum;
+    // int streakBonusRounds = gameProvider.streakBonusRounds;
+    // int streakBonusPoints = gameProvider.streakBonusPoints;
+    // bool streakBonus = gameProvider.streakBonus;
     int sumOfLastRounds = 0;
+    int scoreBuilder = 0;
 
-    score = 0;
-    if (resultRounds.isEmpty) {
-      scoreRounds.add(score);
-      return;
-    }
+    // score = 0;
+    // if (resultRounds.isEmpty) {
+    //   scoreRounds.add(score);
+    //   return;
+    // }
 
     for (int i = 0; i < resultRounds.length; i++) {
       // i traverse the results list because it will always smaller than the bids list
-      double aux =  gameProvider.rnToPrDotIndex(i + 1);
+      double aux =
+          GameProviderWhist.rnToPrDotIndex(i + 1, numberOfPlayers, gameType);
       print(aux);
       int result = resultRounds[i];
       int bid = betRounds[i];
       if (result == bid) {
-        score += result + 5;
+        scoreBuilder += result + 5;
         if (aux.floor() != 1) {
           roundsWon++;
           sumOfLastRounds += bid;
           roundsLost = 0;
-        }        
+        }
       } else {
-        score -= (result - bid).abs();
+        scoreBuilder -= (result - bid).abs();
         if (aux.floor() != 1) {
           roundsLost++;
           roundsWon = 0;
           sumOfLastRounds = 0;
-        }        
+        }
       }
       if (streakBonus && aux.floor() != 1) {
         // daca este activat
         if (lastSum) {
           if (roundsWon >= streakBonusRounds) {
             if (sumOfLastRounds > 0) {
-              score += streakBonusPoints;
+              scoreBuilder += streakBonusPoints;
               sumOfLastRounds = 0;
               roundsWon = 0;
             }
           }
         } else {
           if (roundsWon == streakBonusRounds) {
-            score += streakBonusPoints;
+            scoreBuilder += streakBonusPoints;
             roundsWon = 0;
           }
         }
@@ -104,6 +115,9 @@ class Player {
         }
       }
     }
-    scoreRounds.add(score);
+    print("added: $scoreBuilder");
+    scoreRounds.add(scoreBuilder);
+    print("whist_player.dart: $scoreRounds");
+    score = scoreBuilder;
   }
 }
