@@ -60,19 +60,19 @@ class _TableScoreState extends State<TableScore> {
                           _buildHeaderCell(
                               GameProviderWhist.rnToPrDotIndex(
                                               i,
-                                              numberOfColumns,
+                                              gameProvider.players.length,
                                               gameProvider.gameType) %
                                           1 ==
                                       0
                                   ? GameProviderWhist.rnToPrDotIndex(
                                           i,
-                                          numberOfColumns,
+                                          gameProvider.players.length,
                                           gameProvider.gameType)
                                       .toInt()
                                       .toString() // Display as integer if no fractional part
                                   : GameProviderWhist.rnToPrDotIndex(
                                           i,
-                                          numberOfColumns,
+                                          gameProvider.players.length,
                                           gameProvider.gameType)
                                       .toString() // Display full double if fractional part exists
                               ,
@@ -139,32 +139,32 @@ class _TableScoreState extends State<TableScore> {
   }
 
   Widget _buildEmptyCell(int playerIndex, int roundIndex) {
-    print("playerIndex: $playerIndex, roundIndex: $roundIndex");
+    // print("playerIndex: $playerIndex, roundIndex: $roundIndex");
     const int unknownResult = -1;
     const int unknownScore = -999999;
     int intBid, intResult, intScore;
     GameProviderWhist gameProvider = Provider.of<GameProviderWhist>(context);
-    print("11111111");
+    // print("11111111");
     Player currPlayer = gameProvider.players[playerIndex];
-    print("22222222");
+    // print("22222222");
     intBid = currPlayer.betRounds[roundIndex - 1];
-    print("33333333");
-    print(
-        "${currPlayer.betRounds.length} _______ ${currPlayer.resultRounds.length}");
+    // print("33333333");
+    // print(
+    //    "${currPlayer.betRounds.length} _______ ${currPlayer.resultRounds.length}");
     if (currPlayer.betRounds.length == currPlayer.resultRounds.length) {
       intResult = currPlayer.resultRounds[roundIndex - 1];
-      print("44444444");
-      print("table_score.dart: ${currPlayer.scoreRounds}");
+      // print("44444444");
+      // print("table_score.dart: ${currPlayer.scoreRounds}");
       intScore = currPlayer.scoreRounds[roundIndex - 1];
-      print("55555555");
+      // print("55555555");
     } else {
       if (roundIndex == currPlayer.betRounds.length) {
         intResult = unknownResult;
         intScore = unknownScore;
       } else {
-        print("66666666");
+        // print("66666666");
         intResult = currPlayer.resultRounds[roundIndex - 1];
-        print("77777777");
+        // print("77777777");
         intScore = currPlayer.scoreRounds[roundIndex - 1];
       }
     }

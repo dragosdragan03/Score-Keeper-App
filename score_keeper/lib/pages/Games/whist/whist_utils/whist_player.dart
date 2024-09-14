@@ -6,32 +6,36 @@ class Player {
   late List<int> scoreRounds = [];
   String name;
   int score;
-  int roundsWon;
-  int roundsLost;
 
   Player({
     required this.name,
     required this.score,
-    required this.roundsWon,
-    required this.roundsLost,
   });
 
-  void updateBetRounds(int bet, bool replace) {
-    if (!replace) {
-      // if is false this means i have to add
-      betRounds.add(bet);
-      return;
-    }
-    eraseLastBet();
+  // void updateBetRounds(int bet, bool replace) {
+  //   if (!replace) {
+  //     // if is false this means i have to add
+  //     betRounds.add(bet);
+  //     return;
+  //   }
+  //   eraseLastBet();
+  //   betRounds.add(bet);
+  // }
+
+  // void updateResultRounds(int result, bool replace) {
+  //   if (!replace) {
+  //     resultRounds.add(result);
+  //     return;
+  //   }
+  //   eraseLastResult();
+  //   resultRounds.add(result);
+  // }
+
+  void addBetRound(int bet) {
     betRounds.add(bet);
   }
 
-  void updateResultRounds(int result, bool replace) {
-    if (!replace) {
-      resultRounds.add(result);
-      return;
-    }
-    eraseLastResult();
+  void addResultRound(int result) {
     resultRounds.add(result);
   }
 
@@ -41,14 +45,16 @@ class Player {
     }
   }
 
-// ??????????????????????????????????????
   void eraseLastResult() {
     if (resultRounds.isNotEmpty) {
       resultRounds.removeLast();
     }
-    // if (scoreRounds.isNotEmpty) {
-    //   scoreRounds.removeLast();
-    // }
+  }
+
+  void eraseLastScore() {
+    if (scoreRounds.isNotEmpty) {
+      scoreRounds.removeLast();
+    }
   }
 
   void calculateScore(
@@ -64,6 +70,13 @@ class Player {
     // bool streakBonus = gameProvider.streakBonus;
     int sumOfLastRounds = 0;
     int scoreBuilder = 0;
+    int roundsWon = 0;
+    int roundsLost = 0;
+
+    print("////////////////////////${name}////////////////////////////////");
+    print("");
+
+    print("streakBonusRounds: $streakBonusRounds");
 
     // score = 0;
     // if (resultRounds.isEmpty) {
@@ -73,9 +86,13 @@ class Player {
 
     for (int i = 0; i < resultRounds.length; i++) {
       // i traverse the results list because it will always smaller than the bids list
+
+      print("i: $i");
+      print("sumOfLastRounds: $sumOfLastRounds");
+      print("scoreBuilder: $scoreBuilder");
       double aux =
           GameProviderWhist.rnToPrDotIndex(i + 1, numberOfPlayers, gameType);
-      print(aux);
+      print("aux: $aux");
       int result = resultRounds[i];
       int bid = betRounds[i];
       if (result == bid) {
@@ -110,7 +127,7 @@ class Player {
           }
         }
         if (roundsLost == streakBonusRounds) {
-          score -= streakBonusPoints;
+          scoreBuilder -= streakBonusPoints;
           roundsLost = 0;
         }
       }

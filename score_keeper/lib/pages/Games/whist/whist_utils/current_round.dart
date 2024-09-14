@@ -87,7 +87,7 @@ class _CurrentRoundState extends State<CurrentRound> {
                           gameProvider.roundNumber - 1 ==
                               player.resultRounds.length &&
                           player.resultRounds.isNotEmpty &&
-                          gameProvider.inputTime)
+                          gameProvider.inputOutput == GameProviderWhist.INPUT)
                         Text(
                           "${player.resultRounds.last}",
                           style: const TextStyle(

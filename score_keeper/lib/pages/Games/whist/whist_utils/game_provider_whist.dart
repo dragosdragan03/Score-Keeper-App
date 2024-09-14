@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:score_keeper/pages/Games/whist/whist_utils/whist_player.dart';
 
 class GameProviderWhist extends ChangeNotifier {
+  static const INPUT = true;
+  static const OUTPUT = false;
   List<Player> players;
   bool gameType = false;
   bool replayRound = true;
@@ -10,13 +12,29 @@ class GameProviderWhist extends ChangeNotifier {
   bool gameStarted = false;
   int streakBonusPoints = 5;
   int streakBonusRounds = 5;
+
+  /// Represents the current number of cards given to every player (Whist).
+  ///
+  /// Example: roundNumber = 5, nrPlayers = 3, 1->8->1
+  ///
+  ///          playingRound = 5 - 3 = 2
+  ///
+  ///          1, 1, 1, 2, 3, 4, 5, 6, 7, 8, 8, 8, 7, 6, ...
   int playingRound = 0;
+
+  /// Represents the current round number (Whist).
+  ///
+  /// Example: roundNumber = 5, nrPlayers = 3, 1->8->1
+  ///
+  ///          playingRound = 5 - 3 = 2
+  ///
+  ///          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, ...
   int roundNumber = 1;
-  bool inputTime = true;
+  bool inputOutput = INPUT;
 
   GameProviderWhist(List<Player> playersInput) : players = playersInput;
 
-  int notAllowed() {
+  int notAllowed(List<int> selectedBids) {
     int numberOfPlayers = players.length;
     int lastIndex = (numberOfPlayers - 1 + roundNumber - 1) % numberOfPlayers;
     int sumBids = 0;
@@ -24,14 +42,14 @@ class GameProviderWhist extends ChangeNotifier {
     // Calculate the sum of all players' bets except the last player based on the current permutation
     for (int i = 0; i < numberOfPlayers; i++) {
       if (i != lastIndex) {
-        sumBids += players[i].betRounds.last;
+        sumBids += selectedBids[i];
       }
     }
 
-    print("Playing round:");
-    print(roundNumber);
-    print("Sum of all bets except the last player:");
-    print(sumBids);
+    // print("Playing round:");
+    // print(roundNumber);
+    // print("Sum of all bets except the last player:");
+    // print(sumBids);
 
     int offNumber = playingRound - sumBids;
 
@@ -39,10 +57,10 @@ class GameProviderWhist extends ChangeNotifier {
   }
 
   /// this method checks if all players bet wrongly
-  bool verifyBidsWrong() {
+  bool verifyBidsWrong(List<int> selectedResults) {
     if (replayRound) {
-      for (var player in players) {
-        if (player.betRounds.last == player.resultRounds.last) {
+      for (int i = 0; i < players.length; i++) {
+        if (players[i].betRounds.last == selectedResults[i]) {
           return false;
         }
       }
@@ -69,13 +87,48 @@ class GameProviderWhist extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updatePlayerBetRounds(int indexPlayer, int bid, bool replace) {
-    players[indexPlayer].updateBetRounds(bid, replace);
+  ///Erase last round (bids.length = results.length)
+  void eraseLastRound() {
+    for (int i = 0; i < players.length; i++) {
+      players[i].eraseLastBet();
+      players[i].eraseLastResult();
+      players[i].eraseLastScore();
+      if (players[i].scoreRounds.isNotEmpty) {
+        players[i].score = players[i].scoreRounds.last;
+      } else {
+        players[i].score = 0;
+      }
+    }
+    incrementRoundNumber(false);
     notifyListeners();
   }
 
-  void updatePlayerResultRounds(int indexPlayer, int result, bool replace) {
-    players[indexPlayer].updateResultRounds(result, replace);
+  void erasePlayerLastBetRound(int indexPlayer) {
+    players[indexPlayer].eraseLastBet();
+    notifyListeners();
+  }
+
+  void erasePlayerLastResultRound(int indexPlayer) {
+    players[indexPlayer].eraseLastResult();
+    notifyListeners();
+  }
+
+  void erasePlayerLastScoreRound(int indexPlayer) {
+    players[indexPlayer].eraseLastScore();
+    notifyListeners();
+  }
+
+  void addPlayersBetRound(List<int> bets) {
+    for (int i = 0; i < players.length; i++) {
+      players[i].addBetRound(bets[i]);
+    }
+    notifyListeners();
+  }
+
+  void addPlayersResultRound(List<int> results) {
+    for (int i = 0; i < players.length; i++) {
+      players[i].addResultRound(results[i]);
+    }
     notifyListeners();
   }
 
@@ -175,11 +228,19 @@ class GameProviderWhist extends ChangeNotifier {
     return result;
   }
 
+  void allPlayersBetIncorrect() {
+    for (int i = 0; i < players.length; i++) {
+      erasePlayerLastBetRound(i);
+    }
+    changeRound();
+    notifyListeners();
+  }
+
   void eraseLastBetPlayer() {
     for (var player in players) {
       player.eraseLastBet();
-      player.calculateScore(lastSum, streakBonusRounds, streakBonusPoints,
-          streakBonus, players.length, gameType);
+      // player.calculateScore(lastSum, streakBonusRounds, streakBonusPoints,
+      //     streakBonus, players.length, gameType);
     }
     notifyListeners();
   }
@@ -203,7 +264,7 @@ class GameProviderWhist extends ChangeNotifier {
   }
 
   void changeRound() {
-    inputTime = !inputTime;
+    inputOutput = !inputOutput;
     notifyListeners();
   }
 

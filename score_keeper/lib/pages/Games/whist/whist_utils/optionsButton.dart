@@ -62,9 +62,7 @@ class _OptionsButtonState extends State<OptionsButton> {
     if (gameProvider.players[0].betRounds.isNotEmpty &&
         gameProvider.players[0].betRounds.length ==
             gameProvider.players[0].resultRounds.length) {
-      gameProvider.eraseLastResultPlayer();
-      gameProvider.eraseLastBetPlayer();
-      gameProvider.incrementRoundNumber(false);
+      gameProvider.eraseLastRound();
       showAlertDialog(context, "Last Round Cleared",
           "The results of the last round have been successfully cleared. ");
       return;

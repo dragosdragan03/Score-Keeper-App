@@ -43,10 +43,7 @@ class _WhistGameState extends State<WhistGame> {
         MaterialPageRoute(
           builder: (context) => ChangeNotifierProvider(
             create: (context) => GameProviderWhist(
-              playerNames
-                  .map((name) =>
-                      Player(name: name, score: 0, roundsWon: 0, roundsLost: 0))
-                  .toList(),
+              playerNames.map((name) => Player(name: name, score: 0)).toList(),
             ),
             child: GamesDetails(
               numberOfPlayers: numberOfPlayers,

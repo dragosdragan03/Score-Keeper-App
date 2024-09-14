@@ -125,8 +125,10 @@ class _ScoreBoardState extends State<ScoreBoard> {
 
   Future<void> handleRoundButtonPress(GameProviderWhist gameProvider) async {
     gameProvider.updatePlayingRound();
-    if (gameProvider.inputTime) {
+    if (gameProvider.inputOutput == GameProviderWhist.INPUT) {
+      // INPUT case
       if (gameProvider.roundNumber == numberOfRounds + 1) {
+        // Game over case
         List<String> playersName = gameProvider.players
             .toList()
             .sorted(
@@ -144,17 +146,19 @@ class _ScoreBoardState extends State<ScoreBoard> {
         return;
       }
 
-      setState(() {
-        for (int i = 0; i < gameProvider.players.length; i++) {
-          gameProvider.updatePlayerBetRounds(i, 0, false);
-        }
-      });
+      // setState(() {
+      //   for (int i = 0; i < gameProvider.players.length; i++) {
+      //     gameProvider.updatePlayerBetRounds(i, 0, false);
+      //   }
+      // });
       navigateToInput(gameProvider);
     } else {
-      for (int i = 0; i < gameProvider.players.length; i++) {
-        gameProvider.updatePlayerResultRounds(
-            i, gameProvider.players[i].betRounds.last, false);
-      }
+      // OUTPUT case
+
+      // for (int i = 0; i < gameProvider.players.length; i++) {
+      //   gameProvider.updatePlayerResultRounds(
+      //       i, gameProvider.players[i].betRounds.last, false);
+      // }
       navigateToOutput(gameProvider);
     }
   }

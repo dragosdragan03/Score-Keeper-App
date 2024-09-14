@@ -18,27 +18,31 @@ class InputRounds extends StatefulWidget {
 }
 
 class _InputRoundsState extends State<InputRounds> {
-  // List<int> _selectedNumbers = [];
+  List<int> _selectedBids = List.generate(6, (index) => 0);
 
   // @override
   // void initState() {
   //   super.initState();
-  //   _selectedNumbers = List.generate(widget.numberOfPlayers, (index) => 0);
+  //   _selectedBids = List.generate(widget.numberOfPlayers, (index) => 0);
   // }
 
   void _onNumberSelected(
-      int playerIndex, int number, GameProviderWhist gameProvider) {
+      int playerIndex, GameProviderWhist gameProvider, int number) {
+    _selectedBids[playerIndex] = number;
+    // print("_onNumberSelected");
+    // print(playerIndex);
+    // print(_selectedBids);
     int lastIndex =
         (widget.numberOfPlayers - 1 + gameProvider.roundNumber - 1) %
             widget.numberOfPlayers;
     setState(() {
       // update the input/bid for the player who changed the number
-      gameProvider.updatePlayerBetRounds(playerIndex, number, true);
-      int selectNr = gameProvider.players[lastIndex].betRounds.last;
-      int offNumber = gameProvider.notAllowed();
+      // gameProvider.updatePlayerBetRounds(playerIndex, number, true);
+      int selectNr = _selectedBids[lastIndex];
+      int offNumber = gameProvider.notAllowed(_selectedBids);
 
-      print("offNumber:");
-      print(offNumber);
+      // print("offNumber:");
+      // print(offNumber);
 
       if (selectNr == offNumber) {
         // Check if the current cell is the notAllowed number
@@ -50,13 +54,16 @@ class _InputRoundsState extends State<InputRounds> {
           selectNr -= 1;
         }
       }
-      gameProvider.updatePlayerBetRounds(lastIndex, selectNr, true);
+      _selectedBids[lastIndex] = selectNr;
+      // gameProvider.updatePlayerBetRounds(lastIndex, selectNr, true);
     });
   }
 
-  void confirmAndGoBack(GameProviderWhist gameProvider) {
+  void confirmAndGoBack(
+      GameProviderWhist gameProvider, List<int> selectedBids) {
     setState(() {
-      print(gameProvider.players.map((player) => player.betRounds).toList());
+      // // print(gameProvider.players.map((player) => player.betRounds).toList());
+      gameProvider.addPlayersBetRound(selectedBids);
       gameProvider.changeRound();
       Navigator.pop(context);
     });
@@ -66,9 +73,11 @@ class _InputRoundsState extends State<InputRounds> {
   Widget build(BuildContext context) {
     GameProviderWhist gameProvider =
         Provider.of<GameProviderWhist>(context, listen: false);
+    // List<int> selectedBids =
+    //     List.generate(widget.numberOfPlayers, (index) => 0, growable: false);
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        // automaticallyImplyLeading: false,
         title: const Text('Input Bids'),
       ),
       body: Padding(
@@ -97,21 +106,18 @@ class _InputRoundsState extends State<InputRounds> {
                             startIndex: 0,
                             stopIndex: widget.roundType,
                             step: 1,
-                            selectedNumber: gameProvider
-                                .players[
-                                    (index + gameProvider.roundNumber - 1) %
-                                        widget.numberOfPlayers]
-                                .betRounds
-                                .last,
+                            selectedNumber: _selectedBids[
+                                (index + gameProvider.roundNumber - 1) %
+                                    widget.numberOfPlayers],
                             onNumberSelected: (number) => _onNumberSelected(
                                 (index + gameProvider.roundNumber - 1) %
                                     widget.numberOfPlayers,
-                                number,
-                                gameProvider),
+                                gameProvider,
+                                number),
                             offNumber: index ==
                                     widget.numberOfPlayers -
                                         1 // for the last player
-                                ? gameProvider.notAllowed()
+                                ? gameProvider.notAllowed(_selectedBids)
                                 : -1,
                           ),
                         ),
@@ -124,7 +130,7 @@ class _InputRoundsState extends State<InputRounds> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                onPressed: () => confirmAndGoBack(gameProvider),
+                onPressed: () => confirmAndGoBack(gameProvider, _selectedBids),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                   foregroundColor: Colors.white,

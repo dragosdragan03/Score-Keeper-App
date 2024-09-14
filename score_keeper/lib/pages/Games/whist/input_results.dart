@@ -18,12 +18,28 @@ class OutputRounds extends StatefulWidget {
 }
 
 class _OutputState extends State<OutputRounds> {
-  void _onNumberSelected(
-      int playerIndex, int number, GameProviderWhist gameProvider) {
-    setState(() {
-      gameProvider.updatePlayerResultRounds(playerIndex, number, true);
-    });
+  // GameProviderWhist gameProvider =
+  //       Provider.of<GameProviderWhist>(context, listen: false);
+  //   List<int> selectedResults = List.generate(widget.numberOfPlayers,
+  //       (index) => gameProvider.players[index].betRounds.last,
+  //       growable: false);
+
+  GameProviderWhist gameProvider = GameProviderWhist([]);
+  List<int> selectedResults = [];
+  @override
+  void initState() {
+    super.initState();
+    gameProvider = Provider.of<GameProviderWhist>(context, listen: false);
+    selectedResults = List.generate(widget.numberOfPlayers,
+        (index) => gameProvider.players[index].betRounds.last,
+        growable: false);
   }
+  // void _onNumberSelected(
+  //     int playerIndex, int number, GameProviderWhist gameProvider) {
+  //   setState(() {
+  //     gameProvider.updatePlayerResultRounds(playerIndex, number, true);
+  //   });
+  // }
 
   void showAlertDialog(BuildContext context, String title, String text) {
     showDialog(
@@ -59,31 +75,30 @@ class _OutputState extends State<OutputRounds> {
     );
   }
 
-  void _confirmAndGoBack(GameProviderWhist gameProvider) {
-    // print(_selectedNumbers);
-    // print(gameProvider.players.map((player) => player.resultRounds).toList());
-    // print(gameProvider.playingRound);
-    int sumResults = gameProvider.players
-        .map((player) => player.resultRounds.last)
-        .reduce((value, element) => value + element);
+  void _confirmAndGoBack() {
+    // // print(_selectedNumbers);
+    // // print(gameProvider.players.map((player) => player.resultRounds).toList());
+    // // print(gameProvider.playingRound);
+    int sumResults = selectedResults.fold(
+        0, (previousValue, element) => previousValue + element);
 
-    // print(sumResults);
-    bool isCorrect = gameProvider.verifyBidsWrong();
+    // // print(sumResults);
+    bool isCorrect = !gameProvider.verifyBidsWrong(selectedResults);
     setState(() {
       if (sumResults != gameProvider.playingRound) {
         showAlertDialog(context, 'Invalid Result!',
             "Total results must equal the round hands.");
         return;
-      } else if (isCorrect) {
+      } else if (!isCorrect) {
         // this means all players have to reply the round (bid + result)
-        gameProvider.eraseLastResultPlayer();
-        gameProvider.eraseLastBetPlayer();
-        gameProvider.changeRound();
+        // gameProvider.eraseLastResultPlayer();
+        gameProvider.allPlayersBetIncorrect();
         Navigator.pop(context);
         showAlertDialog(context, 'Alert', "All players' bids are incorrect!");
         return;
       }
       // increment the round number only when is time to go to the next round
+      gameProvider.addPlayersResultRound(selectedResults);
       gameProvider.calculateScore();
       gameProvider.incrementRoundNumber(
           true); // this means it's time to go to the next round
@@ -95,12 +110,9 @@ class _OutputState extends State<OutputRounds> {
 
   @override
   Widget build(BuildContext context) {
-    GameProviderWhist gameProvider =
-        Provider.of<GameProviderWhist>(context, listen: false);
-
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        // automaticallyImplyLeading: false,
         title: const Text('Results'),
       ),
       body: Padding(
@@ -127,17 +139,12 @@ class _OutputState extends State<OutputRounds> {
                             startIndex: 0,
                             stopIndex: widget.roundType,
                             step: 1,
-                            selectedNumber: gameProvider
-                                .players[
-                                    (index + gameProvider.roundNumber - 1) %
-                                        widget.numberOfPlayers]
-                                .resultRounds
-                                .last,
-                            onNumberSelected: (number) => _onNumberSelected(
+                            selectedNumber: selectedResults[
                                 (index + gameProvider.roundNumber - 1) %
-                                    widget.numberOfPlayers,
-                                number,
-                                gameProvider),
+                                    widget.numberOfPlayers],
+                            onNumberSelected: (number) => selectedResults[
+                                (index + gameProvider.roundNumber - 1) %
+                                    widget.numberOfPlayers] = number,
                             offNumber: -1,
                           ),
                         ),
@@ -150,7 +157,7 @@ class _OutputState extends State<OutputRounds> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                onPressed: () => _confirmAndGoBack(gameProvider),
+                onPressed: () => _confirmAndGoBack(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                   foregroundColor: Colors.white,
