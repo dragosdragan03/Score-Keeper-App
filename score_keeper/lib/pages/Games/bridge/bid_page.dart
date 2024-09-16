@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:score_keeper/pages/Games/bridge/bridge_utils/custom_tab_bar.dart';
-import 'package:score_keeper/pages/Games/bridge/bridge_utils/game_provider.dart';
+import 'package:score_keeper/pages/Games/bridge/bridge_utils/game_provider_bridge.dart';
 import 'package:score_keeper/pages/Games/bridge/bridge_utils/player_bid_buttons.dart';
 import 'package:score_keeper/pages/Games/bridge/tricks_page.dart';
 import 'bridge_utils/constants.dart' as constants;
