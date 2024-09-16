@@ -18,7 +18,7 @@ class InputRounds extends StatefulWidget {
 }
 
 class _InputRoundsState extends State<InputRounds> {
-  List<int> _selectedBids = List.generate(6, (index) => 0);
+  final List<int> _selectedBids = List.generate(6, (index) => 0);
 
   // @override
   // void initState() {
