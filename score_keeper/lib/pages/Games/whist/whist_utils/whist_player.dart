@@ -73,7 +73,7 @@ class Player {
     int roundsWon = 0;
     int roundsLost = 0;
 
-    print("////////////////////////${name}////////////////////////////////");
+    print("////////////////////////$name////////////////////////////////");
     print("");
 
     print("streakBonusRounds: $streakBonusRounds");
