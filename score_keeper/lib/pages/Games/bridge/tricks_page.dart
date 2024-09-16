@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:provider/provider.dart';
-import 'package:score_keeper/pages/Games/bridge/bridge_utils/game_provider.dart';
+import 'package:score_keeper/pages/Games/bridge/bridge_utils/game_provider_bridge.dart';
 import 'bridge_utils/constants.dart' as constants;
 
 class TricksPage extends StatefulWidget {

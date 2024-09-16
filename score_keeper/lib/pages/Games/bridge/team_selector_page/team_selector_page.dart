@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:score_keeper/pages/Games/bridge/bridge_utils/game_provider.dart';
+import 'package:score_keeper/pages/Games/bridge/bridge_utils/game_provider_bridge.dart';
 import 'package:score_keeper/pages/Games/bridge/main_bridge_page.dart';
 import 'package:score_keeper/pages/Games/bridge/team_selector_page/utils/team_input.dart';
 
