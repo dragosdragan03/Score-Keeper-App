@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 class CustomListview extends StatefulWidget {
   final int value;
   final List<TextEditingController> areaController;
+  late bool introducedAllNames;
 
-  const CustomListview({
+  CustomListview({
     required this.value,
     required this.areaController,
+    required this.introducedAllNames,
     super.key,
   });
 
@@ -15,6 +17,20 @@ class CustomListview extends StatefulWidget {
 }
 
 class _CustomListviewState extends State<CustomListview> {
+  void updateNames() {
+    print('updateNames');
+    bool ok = true;
+    for (var name in widget.areaController) {
+      if (name.text.isEmpty) {
+        ok = false;
+        break;
+      }
+    }
+    setState(() {
+      widget.introducedAllNames = ok;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Expanded(
@@ -26,6 +42,16 @@ class _CustomListviewState extends State<CustomListview> {
               padding: const EdgeInsets.only(bottom: 10.0),
               child: TextField(
                 controller: widget.areaController[index],
+                onChanged: (value) {
+                  print('Text changed for player ${index + 1}: $value');
+                  updateNames(); // Simplified call
+                },
+                onEditingComplete: () {
+                  print('Editing complete for player ${index + 1}');
+                  updateNames(); // Simplified call
+                  FocusScope.of(context)
+                      .unfocus(); // Dismiss keyboard if needed
+                },
                 decoration: InputDecoration(
                   border: const OutlineInputBorder(),
                   hintText: 'Player ${index + 1}',
